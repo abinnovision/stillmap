@@ -64,6 +64,16 @@ The previewer fixes the JSX runtime to `react-jsx` rather than reading your
 `tsconfig.json`, so it works in projects configured for a bundler. TypeScript
 path aliases therefore do not apply inside templates; use relative imports.
 
+Templates are bundled with esbuild before they are imported, into
+`node_modules/.cache/stillmap`, which is cleared at startup. There has to be an
+installed `node_modules` above the templates directory. `import.meta.url`,
+`import.meta.dirname` and `import.meta.filename` are rewritten to point at the
+file that wrote them, so a font path derived from one resolves as it would
+outside the previewer.
+
+Tiles come over the network. The first render of an area is slow; the tile cache
+is shared across renders, so later ones are not.
+
 There are no pan or zoom controls. The template is the source of truth, and a
 control that does not write back to it would only mislead.
 

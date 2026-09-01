@@ -3,7 +3,7 @@
 	"name": "@internal/tsconfig",
 	"version": "0.0.0",
 	"private": true,
-	"license": "MIT",
+	"license": "Apache-2.0",
 	"author": {
 		"name": "abi group GmbH",
 		"email": "info@abigroup.io",

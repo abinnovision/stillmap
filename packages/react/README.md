@@ -36,8 +36,11 @@ const Neutral = () => (
 );
 ```
 
-**Not supported:** hooks, context, and async components. There is no
-reconciler.
+A marker reserves its box against label placement, so a label underneath it is
+dropped rather than drawn beneath the pin. Pass `reserve={false}` to keep the
+labels and let the marker sit over them.
+
+There is no reconciler, so hooks, context, and async components do not work.
 
 ## Documentation
 
@@ -46,6 +49,6 @@ reconciler.
 - [Tile sources](../../docs/tile-sources.md), including attribution and
   rate-limit etiquette
 
-## Licence
+## License
 
-MIT
+Apache-2.0

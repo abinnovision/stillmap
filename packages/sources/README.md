@@ -9,15 +9,15 @@ OpenMapTiles, `streets` in Shortbread, and `roads` in Protomaps, with no overlap
 in layer names, property names, or value vocabularies.
 
 ```ts
-import { openFreeMap, openMapTiles, httpTileSource } from "@stillmap/sources";
+import { httpTileSource, openFreeMap, openMapTiles } from "@stillmap/sources";
 
-// Free planet-wide OpenMapTiles vector tiles, no API key.
+// Planet-wide OpenMapTiles vector tiles, free and without an API key.
 const source = openFreeMap();
 ```
 
-See [docs/tile-sources.md](../../docs/tile-sources.md) for writing your own
-adapter and for rate-limit etiquette.
+See [tile sources](../../docs/tile-sources.md) for writing your own adapter and
+for rate-limit etiquette.
 
-## Licence
+## License
 
-MIT
+Apache-2.0

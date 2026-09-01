@@ -17,7 +17,7 @@
 		"url": "git+https://github.com/abinnovision/stillmap.git",
 		"directory": "packages/react"
 	},
-	"license": "MIT",
+	"license": "Apache-2.0",
 	"author": {
 		"name": "abi group GmbH",
 		"email": "info@abigroup.io",

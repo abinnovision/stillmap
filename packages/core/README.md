@@ -4,15 +4,15 @@ Rendering engine for [stillmap](https://github.com/abinnovision/stillmap):
 vector tile decoding, Web Mercator projection, style resolution, label
 placement, and SVG serialisation.
 
-No React. No native dependencies. PNG output is available through the optional
-`@resvg/resvg-js` peer dependency; without it, SVG output still works.
+No React, no native dependencies. PNG output comes from the optional
+`@resvg/resvg-js` peer dependency. Without it, SVG output still works.
 
-Core defines the declaration format the JSX layer produces, so the engine is
-fully usable by hand-writing declarations:
+Core owns the declaration format the JSX layer produces, so the engine is usable
+on its own:
 
 ```ts
-import { openFreeMap } from "@stillmap/sources";
 import { renderScene } from "@stillmap/core";
+import { openFreeMap } from "@stillmap/sources";
 
 const { svg } = await renderScene({
   source: openFreeMap(),
@@ -35,6 +35,6 @@ const { svg } = await renderScene({
 
 Most consumers want [`@stillmap/react`](../react) instead.
 
-## Licence
+## License
 
-MIT
+Apache-2.0
