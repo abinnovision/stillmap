@@ -1,5 +1,5 @@
 import { VectorTile } from "@mapbox/vector-tile";
-import Pbf from "pbf";
+import { PbfReader as Pbf } from "pbf";
 
 import { world } from "./geometry.js";
 
