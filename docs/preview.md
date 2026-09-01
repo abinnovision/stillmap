@@ -16,10 +16,13 @@ ignored everywhere except the previewer.
 
 ```tsx
 // maps/locator.tsx
-import { Attribution, Map, Pin, Roads } from "@stillmap/react";
+import { Attribution, Font, Map, Pin, Road } from "@stillmap/react";
 import { openFreeMap } from "@stillmap/sources";
+import { fileURLToPath } from "node:url";
 
 import type { LngLat } from "@stillmap/core";
+
+const INTER = fileURLToPath(new URL("./Inter.ttf", import.meta.url));
 
 const Locator = ({ position }: { position: LngLat }) => (
   <Map
@@ -29,7 +32,8 @@ const Locator = ({ position }: { position: LngLat }) => (
     width={600}
     height={400}
   >
-    <Roads />
+    <Font family="Inter" file={INTER} />
+    <Road stroke="#C9C9C4" width={2} />
     <Pin position={position} />
     <Attribution />
   </Map>
@@ -39,6 +43,12 @@ Locator.PreviewProps = { position: [9.9937, 53.5511] satisfies LngLat };
 
 export default Locator;
 ```
+
+The font is not decoration. Every scene carries attribution, and the rasteriser
+loads no system fonts, so a PNG with no font declared would lose it silently;
+`renderMap` refuses that render instead. The road colour is likewise deliberate:
+an unstyled layer paints black at one pixel, and the default background is
+white.
 
 Because the export is an ordinary component, the same file can back the map you
 render in production. Point `renderMap` at it directly and pass real props.
