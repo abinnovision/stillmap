@@ -11,18 +11,19 @@
 	},
 	"type": "module",
 	"scripts": {
-		"format:check": "prettier --check '{{src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}'",
-		"format:fix": "prettier --write '{{src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}'",
-		"lint:check": "eslint '{{src,test}/**/*,*}.{t,j}s{,x}'",
-		"lint:fix": "eslint '{{src,test}/**/*,*}.{t,j}s{,x}' --fix",
+		"dev": "stillmap dev maps",
+		"format:check": "prettier --check '{{maps,src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}'",
+		"format:fix": "prettier --write '{{maps,src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}'",
+		"lint:check": "eslint '{{maps,src,test}/**/*,*}.{t,j}s{,x}'",
+		"lint:fix": "eslint '{{maps,src,test}/**/*,*}.{t,j}s{,x}' --fix",
 		"start": "tsx src/main.ts",
 		"test-unit": "vitest --run --config vitest.config.ts --project='*#unit'",
 		"test-unit:watch": "vitest --config vitest.config.ts --project='*#unit'",
 		"typecheck": "tsc -p tsconfig.json"
 	},
 	"lint-staged": {
-		"{{src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}": "prettier --write",
-		"{{src,test}/**/*,*}.{t,j}s{,x}": "eslint --fix"
+		"{{maps,src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}": "prettier --write",
+		"{{maps,src,test}/**/*,*}.{t,j}s{,x}": "eslint --fix"
 	},
 	"prettier": "@abinnovision/prettier-config",
 	"dependencies": {
@@ -42,8 +43,9 @@
 		"prettier": "^3.9.5",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
+		"stillmap": "workspace:^",
 		"tsx": "^4.20.6",
-		"typescript": "^7.0.2",
+		"typescript": "^6.0.3",
 		"vitest": "^4.1.10"
 	}
 }
