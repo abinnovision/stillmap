@@ -37,6 +37,11 @@ export async function main(): Promise<void> {
 		scale: 2,
 	});
 	const brussels = await renderMap(<Brussels />, { format: "png", scale: 2 });
+	/* The map half of the repository header; see `assets/README.md`. */
+	const banner = await renderMap(
+		<Locator position={HAMBURG} width={660} height={420} />,
+		{ format: "png", scale: 2 },
+	);
 
 	await writeFile(new URL("locator.png", OUT), locator.png);
 	await writeFile(new URL("locator.svg", OUT), locator.svg);
@@ -44,14 +49,16 @@ export async function main(): Promise<void> {
 	await writeFile(new URL("offices.svg", OUT), offices.svg);
 	await writeFile(new URL("brussels.png", OUT), brussels.png);
 	await writeFile(new URL("brussels.svg", OUT), brussels.svg);
+	await writeFile(new URL("banner.png", OUT), banner.png);
 
 	for (const warning of [
 		...locator.warnings,
 		...offices.warnings,
 		...brussels.warnings,
+		...banner.warnings,
 	]) {
 		process.stdout.write(`warning ${warning.code}: ${warning.message}\n`);
 	}
 
-	process.stdout.write(`wrote 6 files to ${OUT.pathname}\n`);
+	process.stdout.write(`wrote 7 files to ${OUT.pathname}\n`);
 }

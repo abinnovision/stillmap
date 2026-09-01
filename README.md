@@ -1,6 +1,9 @@
-# stillmap
-
-Server-side map rendering for TypeScript, with a React-shaped API.
+<p align="center">
+  <img
+    src="assets/header.png"
+    alt="stillmap: server-side map rendering for TypeScript, with a React-shaped API."
+  />
+</p>
 
 Describe a map as JSX, get back an SVG string or a PNG buffer. No browser, no
 canvas, no native map library, and no API key.
