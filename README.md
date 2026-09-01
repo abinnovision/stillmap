@@ -8,23 +8,66 @@
 Describe a map as JSX, get back an SVG string or a PNG buffer. No browser, no
 canvas, no native map library, and no API key.
 
+## Getting started
+
+```sh
+yarn add @stillmap/react @stillmap/sources react react-dom
+```
+
+PNG output goes through resvg, which is an optional peer. Skip it if SVG is
+all you need.
+
+```sh
+yarn add @resvg/resvg-js
+```
+
 ```tsx
+import {
+  Attribution,
+  Font,
+  Map,
+  Pin,
+  Road,
+  Water,
+  renderMap,
+} from "@stillmap/react";
+import { openFreeMap } from "@stillmap/sources";
+import { writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+
+const HAMBURG = [9.9937, 53.5511] as const;
+const INTER = fileURLToPath(new URL("./Inter.ttf", import.meta.url));
+
 const { png } = await renderMap(
   <Map
     source={openFreeMap()}
-    center={[9.9937, 53.5511]}
+    center={HAMBURG}
     zoom={13}
     width={1200}
     height={300}
+    background="#F5F5F3"
   >
-    <Font family="Inter" weight={500} file={interMedium} />
+    <Font family="Inter" file={INTER} />
     <Water fill="#E1E4E7" />
+    <Road classes={["secondary", "tertiary"]} stroke="#FFFFFF" width={2} />
     <Road classes={["motorway", "trunk"]} stroke="#FCFBF9" width={3.2} />
-    <Pin position={[9.9937, 53.5511]} fill="#9DB59D" />
+    <Pin position={HAMBURG} fill="#9DB59D" />
+    <Attribution />
   </Map>,
   { format: "png", scale: 2 },
 );
+
+await writeFile("map.png", png);
 ```
+
+A font is not optional for PNG. Every render carries attribution, and the
+rasteriser loads no system fonts, so `renderMap` refuses rather than hand back
+an image with the attribution missing. Fonts are passed as file paths; see
+[fonts](./docs/fonts.md).
+
+Nothing is styled by default. A layer you do not declare is not drawn, and a
+layer you declare without a colour paints black, so the palette above is doing
+real work rather than decorating.
 
 ## Why this exists
 
