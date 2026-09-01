@@ -34,4 +34,14 @@ describe("toPng", () => {
 			}),
 		).rejects.toBeInstanceOf(StillmapError);
 	});
+
+	it("refuses to rasterise text with no font, so attribution cannot vanish", async () => {
+		const withText =
+			'<svg xmlns="http://www.w3.org/2000/svg" width="40" height="20">' +
+			'<text x="2" y="10">OpenFreeMap</text></svg>';
+
+		await expect(
+			toPng({ svg: withText, width: 20, fonts: [] }),
+		).rejects.toMatchObject({ code: "FONT_MISSING_FOR_TEXT" });
+	});
 });

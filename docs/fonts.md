@@ -20,9 +20,16 @@ Every declared path is validated before the first tile is fetched:
 | Unsupported format (`.woff`, `.woff2`)      | throws `FONT_FORMAT_UNSUPPORTED`                  |
 | Path cannot be read                         | throws `FONT_NOT_FOUND`, naming the resolved path |
 | A label is declared with no matching family | throws `FONT_MISSING_FOR_LABELS`                  |
+| A PNG is requested with no font declared    | throws `FONT_MISSING_FOR_TEXT`                    |
 
 None of these is a warning. A map that renders without its labels looks
 finished and is not.
+
+The last one applies to every PNG, including a map with no labels at all. The
+rasteriser loads no system fonts, and every scene carries attribution, so a
+render with nothing to draw glyphs with would drop the one element that may not
+be omitted. SVG output is unaffected: it names the family and leaves resolution
+to whatever reads it.
 
 ## Supported formats
 

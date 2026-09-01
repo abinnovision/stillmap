@@ -43,6 +43,11 @@ const NO_BACKEND =
 	" browser picks the fonts rather than the renderer, so text may not look" +
 	" like the output.";
 
+const NO_FONT =
+	"This template declares no font, so the PNG would drop every glyph," +
+	" including the attribution. Showing SVG, where the browser supplies the" +
+	" fonts.";
+
 /** Latched after the first failure: the backend cannot appear mid-session. */
 let pngUnavailable = false;
 
@@ -137,13 +142,27 @@ async function renderPng(
 			started,
 		});
 	} catch (error) {
-		if (!(error instanceof Error) || codeOf(error) !== "PNG_BACKEND_MISSING") {
+		if (!(error instanceof Error)) {
 			throw error;
 		}
 
-		pngUnavailable = true;
+		const code = codeOf(error);
 
-		return await renderSvg(element, started, NO_BACKEND);
+		if (code === "PNG_BACKEND_MISSING") {
+			pngUnavailable = true;
+
+			return await renderSvg(element, started, NO_BACKEND);
+		}
+
+		/*
+		 * A property of the template rather than the session, so this never
+		 * latches: the next template may well declare a font.
+		 */
+		if (code === "FONT_MISSING_FOR_TEXT") {
+			return await renderSvg(element, started, NO_FONT);
+		}
+
+		throw error;
 	}
 }
 

@@ -6,6 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { StillmapError } from "./errors.js";
 import {
 	assertFontCoversLabels,
+	assertFontCoversText,
 	assertFontsExist,
 	loadEmbeddableFonts,
 } from "./fonts.js";
@@ -152,5 +153,38 @@ describe("loadEmbeddableFonts", () => {
 
 		expect(fonts).toHaveLength(0);
 		expect(warn.warnings[0]).toMatchObject({ code: "FONT_NOT_EMBEDDABLE" });
+	});
+});
+
+describe("assertFontCoversText", () => {
+	const withText = '<svg><text x="1" y="1">OpenFreeMap</text></svg>';
+
+	it("rejects text with no font, naming the attribution", () => {
+		expect(() => {
+			assertFontCoversText(withText, []);
+		}).toThrow(/attribution/);
+	});
+
+	it("reports the failure as a StillmapError with a stable code", () => {
+		const error = captureError(() => {
+			assertFontCoversText(withText, []);
+		});
+
+		expect(error).toBeInstanceOf(StillmapError);
+		expect((error as StillmapError).code).toBe("FONT_MISSING_FOR_TEXT");
+	});
+
+	it("accepts text once a font is declared", () => {
+		expect(() => {
+			assertFontCoversText(withText, [
+				{ family: "Stub", file: "/tmp/Stub.ttf" },
+			]);
+		}).not.toThrow();
+	});
+
+	it("accepts a scene with no text at all", () => {
+		expect(() => {
+			assertFontCoversText('<svg><rect width="1" height="1"/></svg>', []);
+		}).not.toThrow();
 	});
 });

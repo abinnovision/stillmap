@@ -1,5 +1,5 @@
 import { StillmapError } from "./errors.js";
-import { assertFontsExist } from "./fonts.js";
+import { assertFontCoversText, assertFontsExist } from "./fonts.js";
 
 import type { FontFace } from "./fonts.js";
 /*
@@ -23,6 +23,7 @@ export interface ToPngArgs {
  */
 export async function toPng(args: ToPngArgs): Promise<Buffer> {
 	assertFontsExist(args.fonts);
+	assertFontCoversText(args.svg, args.fonts);
 
 	let Resvg: typeof ResvgClass;
 

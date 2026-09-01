@@ -79,6 +79,26 @@ export function assertFontCoversLabels(
 	}
 }
 
+/**
+ * resvg loads no system fonts, so an empty font database draws no glyph at
+ * all. Every scene carries attribution, which is a licence condition and may
+ * not be dropped, so rasterising text with nothing to draw it with is a silent
+ * breach rather than a cosmetic loss.
+ */
+export function assertFontCoversText(
+	svg: string,
+	fonts: readonly FontFace[],
+): void {
+	if (fonts.length > 0 || !svg.includes("<text")) {
+		return;
+	}
+
+	throw new StillmapError(
+		"FONT_MISSING_FOR_TEXT",
+		"No font declared. The rasteriser would drop every glyph, including the attribution.",
+	);
+}
+
 /** A face ready to be written into an SVG `@font-face` rule. */
 export interface EmbeddedFont {
 	readonly family: string;
