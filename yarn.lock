@@ -968,14 +968,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/vector-tile@npm:^2.0.3":
-  version: 2.0.5
-  resolution: "@mapbox/vector-tile@npm:2.0.5"
+"@mapbox/vector-tile@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@mapbox/vector-tile@npm:3.0.0"
   dependencies:
     "@mapbox/point-geometry": "npm:~1.1.0"
     "@types/geojson": "npm:^7946.0.16"
-    pbf: "npm:^4.0.2"
-  checksum: 10/ca788f6c34bc699033f02f6f9a8fc2a4539cfb6c85bdd5a3a143c31698ae8865e99e3b51a4cf11a2070a14c435cba2ec8ca1bcad4eeac0cd678b972a7736c402
+    pbf: "npm:^5.0.0"
+  checksum: 10/1c1b4ad46ea9d5bdfce36b5890ba26f3ecc5d0f4e58129b319e65c0cda5d50168b34a85685b33408053dd6776309c744cd5ba16908bb0534c11ac3d068820730
   languageName: node
   linkType: hard
 
@@ -1300,13 +1300,13 @@ __metadata:
     "@abinnovision/eslint-config-base": "npm:^3.4.2"
     "@abinnovision/prettier-config": "npm:^2.2.0"
     "@internal/tsconfig": "workspace:*"
-    "@mapbox/vector-tile": "npm:^2.0.3"
+    "@mapbox/vector-tile": "npm:^3.0.0"
     "@resvg/resvg-js": "npm:^2.6.2"
     "@types/mapbox__vector-tile": "npm:^1.3.4"
     "@types/node": "npm:^24.10.1"
     "@vitest/coverage-v8": "npm:^4.1.10"
     eslint: "npm:^10.7.0"
-    pbf: "npm:^4.0.1"
+    pbf: "npm:^5.1.2"
     prettier: "npm:^3.9.5"
     typescript: "npm:^6.0.3"
     vitest: "npm:^4.1.10"
@@ -3706,14 +3706,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pbf@npm:^4.0.1, pbf@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "pbf@npm:4.0.2"
+"pbf@npm:^5.0.0, pbf@npm:^5.1.2":
+  version: 5.1.2
+  resolution: "pbf@npm:5.1.2"
   dependencies:
     resolve-protobuf-schema: "npm:^2.1.0"
   bin:
     pbf: bin/pbf
-  checksum: 10/a6d60f2f374c51bcb08b1b49d08c01aed31c4e9cfbf43002178e1cf0f63c5f5fc4aa9dd0220948be775e2d0bcc644954b9d1e8dca91466a5160dcc0a0313edd3
+  checksum: 10/add0663777f352c9432503e5fa18eb5be112a8ee4d32b233b8c7128bebddb013b874748f63d9db1a6f3050d077c70acdafda75fd8d4b66a75af627ec2db4b7a8
   languageName: node
   linkType: hard
 
