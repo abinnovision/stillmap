@@ -1,0 +1,8 @@
+# Mark Yarn related files
+/.yarn/**            linguist-vendored
+/.yarn/releases/*    binary
+/.yarn/plugins/**/*  binary
+
+# Mark yarn.lock file as vendored and not diffable.
+yarn.lock linguist-vendored
+yarn.lock -diff

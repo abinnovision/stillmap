@@ -1,0 +1,26 @@
+{
+	"$schema": "https://json.schemastore.org/package.json",
+	"name": "@internal/tsconfig",
+	"version": "0.0.0",
+	"private": true,
+	"license": "MIT",
+	"author": {
+		"name": "abi group GmbH",
+		"email": "info@abigroup.io",
+		"url": "https://abigroup.io"
+	},
+	"scripts": {
+		"format:check": "prettier --check '*.{json,json5,yml,yaml,md}'",
+		"format:fix": "prettier --write '*.{json,json5,yml,yaml,md}'"
+	},
+	"lint-staged": {
+		"*.{json,json5,yml,yaml,md}": [
+			"prettier --write"
+		]
+	},
+	"prettier": "@abinnovision/prettier-config",
+	"devDependencies": {
+		"prettier": "^3.9.5",
+		"typescript": "^6.0.3"
+	}
+}

@@ -1,0 +1,6 @@
+{
+	"packages/core": "0.0.0",
+	"packages/sources": "0.0.0",
+	"packages/react": "0.0.0",
+	"packages/cli": "0.0.0"
+}

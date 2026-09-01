@@ -1,0 +1,9 @@
+{
+	"extends": ["@internal/tsconfig/tsconfig.base.json"],
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"allowImportingTsExtensions": true
+	},
+	"include": ["src/**/*", "*.ts"],
+	"exclude": ["node_modules"]
+}

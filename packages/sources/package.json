@@ -1,0 +1,72 @@
+{
+	"$schema": "https://json.schemastore.org/package.json",
+	"name": "@stillmap/sources",
+	"version": "0.0.0",
+	"description": "Tile sources and vector tile schema adapters for stillmap.",
+	"keywords": [
+		"map",
+		"vector-tile",
+		"openmaptiles",
+		"shortbread",
+		"protomaps"
+	],
+	"homepage": "https://github.com/abinnovision/stillmap",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/abinnovision/stillmap.git",
+		"directory": "packages/sources"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "abi group GmbH",
+		"email": "info@abigroup.io",
+		"url": "https://abigroup.io"
+	},
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"development": "./src/index.ts",
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsc --build tsconfig.build.json",
+		"format:check": "prettier --check '{{src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}'",
+		"format:fix": "prettier --write '{{src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}'",
+		"lint:check": "eslint '{{src,test}/**/*,*}.{t,j}s{,x}'",
+		"lint:fix": "eslint '{{src,test}/**/*,*}.{t,j}s{,x}' --fix",
+		"test-unit": "vitest --run --coverage --config vitest.config.ts --project='*#unit'",
+		"test-unit:watch": "vitest --config vitest.config.ts --project='*#unit'",
+		"typecheck": "tsc -p tsconfig.json"
+	},
+	"lint-staged": {
+		"{{src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}": "prettier --write",
+		"{{src,test}/**/*,*}.{t,j}s{,x}": "eslint --fix"
+	},
+	"prettier": "@abinnovision/prettier-config",
+	"dependencies": {
+		"@stillmap/core": "workspace:^"
+	},
+	"devDependencies": {
+		"@abinnovision/eslint-config-base": "^3.4.2",
+		"@abinnovision/prettier-config": "^2.2.0",
+		"@internal/tsconfig": "workspace:*",
+		"@types/node": "^24.10.1",
+		"@vitest/coverage-v8": "^4.1.10",
+		"eslint": "^10.7.0",
+		"prettier": "^3.9.5",
+		"typescript": "^6.0.3",
+		"vitest": "^4.1.10"
+	},
+	"engines": {
+		"node": ">=22"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

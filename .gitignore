@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+out/
+.turbo/
+*.tsbuildinfo
+examples/*/out/
+
+# Test coverage
+coverage/
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/settings.json
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# Logs
+*.log
+
+# Local (personal scripts, notes, scratch files)
+.local/
+.claude/settings.local.json
+.omc/
+
+# Working design docs and implementation plans. Kept out of the repository:
+# they describe how the code came to be, not how to use it. User-facing
+# documentation lives in docs/.
+.superpowers/

@@ -1,0 +1,23 @@
+# $schema: https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/dependabot-2.0.json
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    versioning-strategy: increase
+    open-pull-requests-limit: 15
+    schedule:
+      interval: daily
+    labels:
+      - dependencies
+    commit-message:
+      prefix: "fix(deps)"
+      prefix-development: "build(deps)"
+    cooldown:
+      default-days: 5
+    groups:
+      production-dependencies:
+        dependency-type: production
+        patterns: ["*"]
+      development-dependencies:
+        dependency-type: development
+        patterns: ["*"]

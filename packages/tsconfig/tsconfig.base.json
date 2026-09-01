@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"lib": ["ES2024", "ESNext.Collection", "DOM", "DOM.Iterable", "ESNext"],
+		"target": "es2024",
+		"module": "nodenext",
+		"types": ["node"],
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"noEmit": true,
+		"strict": true,
+		"allowUnusedLabels": false,
+		"allowUnreachableCode": false,
+		"exactOptionalPropertyTypes": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true
+	}
+}
