@@ -61,7 +61,7 @@
 		"@abinnovision/prettier-config": "^2.2.0",
 		"@internal/tsconfig": "workspace:*",
 		"@resvg/resvg-js": "^2.6.2",
-		"@types/node": "^24.10.1",
+		"@types/node": "^26.4.0",
 		"@types/react": "^19.2.17",
 		"@types/react-dom": "^19.2.3",
 		"@vitest/coverage-v8": "^4.1.10",
@@ -69,7 +69,7 @@
 		"prettier": "^3.9.5",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
-		"typescript": "^6.0.3",
+		"typescript": "^7.0.2",
 		"vitest": "^4.1.10"
 	},
 	"peerDependencies": {
