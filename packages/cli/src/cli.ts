@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
-process.stderr.write(
-	[
-		"stillmap: the CLI is not implemented yet.",
-		"",
-		"Install @stillmap/react to declare and render maps from your own code:",
-		"  https://github.com/abinnovision/stillmap",
-		"",
-	].join("\n"),
-);
+import { run } from "./run.js";
 
-process.exit(1);
+/*
+ * Templates are bundled before they run, so without this a stack trace points
+ * at the bundle rather than the file the author is editing.
+ */
+process.setSourceMapsEnabled(true);
+
+process.exitCode = await run(process.argv.slice(2), {
+	out: (text) => process.stdout.write(text),
+	err: (text) => process.stderr.write(text),
+});

@@ -14,7 +14,7 @@ below are the parts that must hold regardless.
 | `packages/core`     | Engine. No React, no native dependency. Owns every shared type. |
 | `packages/sources`  | Tile sources and schema adapters.                               |
 | `packages/react`    | JSX declaration API and `renderMap()`.                          |
-| `packages/cli`      | Reserved. Unimplemented.                                        |
+| `packages/cli`      | `stillmap dev`, the preview server. Bundles with esbuild.       |
 | `packages/tsconfig` | Private shared TypeScript base. Never published.                |
 | `examples/basic`    | Runnable example and golden-image regression suite.             |
 

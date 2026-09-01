@@ -4,6 +4,6 @@
 		"jsx": "react-jsx",
 		"allowImportingTsExtensions": true
 	},
-	"include": ["src/**/*", "*.ts"],
+	"include": ["maps/**/*", "src/**/*", "test/**/*", "*.ts"],
 	"exclude": ["node_modules"]
 }
