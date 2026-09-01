@@ -64,6 +64,12 @@ export interface MarkerDeclaration {
 	readonly anchor: MarkerAnchor;
 	readonly offset?: readonly [x: number, y: number];
 	readonly padding?: number;
+	/**
+	 * Whether the marker claims its box against label collision. Defaults to
+	 * true. Setting it false draws the marker without reserving anything, so
+	 * labels place as though it were not there and it may cover them.
+	 */
+	readonly reserve?: boolean;
 	/** Pre-rendered SVG markup for the marker's children. */
 	readonly markup: string;
 }

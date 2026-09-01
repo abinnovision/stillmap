@@ -102,3 +102,41 @@ example fonts cover. Text outside them rasterises as empty boxes, which is worse
 than an absent label, so it is dropped instead. Supplying a font with wider
 coverage does not currently widen that filter; that belongs to the label engine
 work deferred past v0.
+
+## Embedding fonts in SVG output
+
+A rendered SVG names its font and nothing more:
+
+```xml
+<text font-family="Inter" ...>Brussels</text>
+```
+
+The rasteriser does not care, because it opens the file you declared by path.
+Anything else does. A browser resolves that name against the fonts it happens to
+have, and when the family is missing it substitutes silently, so text that looks
+right to resvg can render in a completely different face somewhere else.
+
+Pass `embedFonts` when the SVG itself has to travel:
+
+```tsx
+const { svg } = await renderMap(<Locator position={position} />, {
+  embedFonts: true,
+});
+```
+
+Every declared face is written into the document as an `@font-face` rule with
+the file inlined as a `data:` URI. The SVG then renders identically wherever it
+is opened.
+
+It is off by default because it costs the whole file. Inter is 876KB, which
+base64 encodes to about 1.2MB, taking one example map from 450KB to 1.6MB. The
+encoded form is cached per path and modification time, so repeated renders pay
+for it once.
+
+Only `.ttf` and `.otf` can be embedded. A `.ttc` or `.otc` collection holds
+several faces and no browser loads one through `@font-face`, so it is skipped
+with a `FONT_NOT_EMBEDDABLE` warning and stays available to the rasteriser as a
+path.
+
+There is no reason to combine `embedFonts` with `format: "png"`. The rules would
+be carried through the pipeline and ignored.

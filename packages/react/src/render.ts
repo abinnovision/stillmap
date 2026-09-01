@@ -2,6 +2,7 @@ import {
 	StillmapError,
 	createWarningCollector,
 	renderScene,
+	toLngLat,
 	toPng,
 } from "@stillmap/core";
 
@@ -18,6 +19,12 @@ export interface RenderOptions {
 	readonly scale?: number;
 	readonly signal?: AbortSignal;
 	readonly onWarning?: (warning: RenderWarning) => void;
+	/**
+	 * Write the declared fonts into the SVG as `@font-face` data URIs, so it
+	 * renders correctly somewhere that does not have them installed. Costs the
+	 * size of the font files; the PNG path never needs it.
+	 */
+	readonly embedFonts?: boolean;
 	/** Promote every warning to a throw. Intended for CI and golden tests. */
 	readonly strict?: boolean;
 }
@@ -27,6 +34,11 @@ export interface RenderedSvg {
 	/** CSS pixels, before `scale` is applied to the SVG root. */
 	readonly width: number;
 	readonly height: number;
+	/**
+	 * The view actually drawn. Under `fit="markers"` these are derived from the
+	 * tree rather than declared, and are otherwise unobservable.
+	 */
+	readonly viewport: ResolvedViewport;
 	readonly warnings: readonly RenderWarning[];
 }
 
@@ -34,16 +46,20 @@ export interface RenderedPng extends RenderedSvg {
 	readonly png: Buffer;
 }
 
-const DEFAULT_FIT_MAX_ZOOM = 17;
-
-interface Viewport {
-	readonly center: LngLat | MapProps["center"];
+/** A view resolved to concrete coordinates, however it was declared. */
+export interface ResolvedViewport {
+	readonly center: LngLat;
 	readonly zoom: number;
 }
 
-function resolveViewport(props: MapProps, walked: WalkResult): Viewport {
+const DEFAULT_FIT_MAX_ZOOM = 17;
+
+function resolveViewport(
+	props: MapProps,
+	walked: WalkResult,
+): ResolvedViewport {
 	if (props.fit !== "markers") {
-		return { center: props.center, zoom: props.zoom };
+		return { center: toLngLat(props.center), zoom: props.zoom };
 	}
 
 	return fitMarkers({
@@ -91,7 +107,7 @@ export async function renderMap(
 
 	const scene = await renderScene({
 		source: props.source,
-		center: view.center as LngLat,
+		center: view.center,
 		zoom: view.zoom,
 		width: props.width,
 		height: props.height,
@@ -102,6 +118,9 @@ export async function renderMap(
 		...(props.background === undefined ? {} : { background: props.background }),
 		...(props.locale === undefined ? {} : { locale: props.locale }),
 		...(options.scale === undefined ? {} : { scale: options.scale }),
+		...(options.embedFonts === undefined
+			? {}
+			: { embedFonts: options.embedFonts }),
 		...(walked.attribution?.placement === undefined
 			? {}
 			: { attributionPlacement: walked.attribution.placement }),
@@ -119,6 +138,7 @@ export async function renderMap(
 		svg: scene.svg,
 		width: scene.width,
 		height: scene.height,
+		viewport: view,
 		warnings: warn.warnings,
 	};
 

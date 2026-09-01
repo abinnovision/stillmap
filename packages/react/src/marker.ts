@@ -21,6 +21,12 @@ export interface MarkerProps {
 	readonly offset?: readonly [x: number, y: number];
 	/** Keep-clear margin used by label collision. */
 	readonly padding?: number;
+	/**
+	 * Whether the marker claims its box against label collision. Defaults to
+	 * true. Set it false to draw the marker over the labels instead of losing
+	 * the ones underneath it.
+	 */
+	readonly reserve?: boolean;
 	readonly children: ReactNode;
 }
 
@@ -34,6 +40,7 @@ export const Marker = defineComponent<MarkerProps>(
 		anchor: props.anchor ?? "center",
 		...(props.offset === undefined ? {} : { offset: props.offset }),
 		...(props.padding === undefined ? {} : { padding: props.padding }),
+		...(props.reserve === undefined ? {} : { reserve: props.reserve }),
 		markup: renderOverlay(props.children, context.warn),
 	}),
 );
@@ -47,6 +54,8 @@ export interface PinProps {
 	/** Defaults to `"bottom"`. */
 	readonly anchor?: MarkerAnchor;
 	readonly padding?: number;
+	/** See `MarkerProps.reserve`. Defaults to true. */
+	readonly reserve?: boolean;
 }
 
 const PIN_SIZE: readonly [number, number] = [28, 36];
@@ -85,6 +94,7 @@ export const Pin = defineComponent<PinProps>(
 			size,
 			anchor: props.anchor ?? "bottom",
 			...(props.padding === undefined ? {} : { padding: props.padding }),
+			...(props.reserve === undefined ? {} : { reserve: props.reserve }),
 			markup: renderOverlay(glyph, context.warn),
 		};
 	},

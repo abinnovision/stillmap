@@ -4,10 +4,16 @@ import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { StillmapError } from "./errors.js";
-import { assertFontCoversLabels, assertFontsExist } from "./fonts.js";
+import {
+	assertFontCoversLabels,
+	assertFontsExist,
+	loadEmbeddableFonts,
+} from "./fonts.js";
+import { createWarningCollector } from "./warnings.js";
 
 let directory = "";
 let realFile = "";
+let collectionFile = "";
 
 beforeAll(() => {
 	/*
@@ -17,6 +23,8 @@ beforeAll(() => {
 	directory = mkdtempSync(join(tmpdir(), "stillmap-fonts-"));
 	realFile = join(directory, "Stub-Regular.ttf");
 	writeFileSync(realFile, "not a real font");
+	collectionFile = join(directory, "Stub.ttc");
+	writeFileSync(collectionFile, "not a real collection");
 });
 
 afterAll(() => {
@@ -112,5 +120,37 @@ describe("assertFontCoversLabels", () => {
 		expect(() => {
 			assertFontCoversLabels([], []);
 		}).not.toThrow();
+	});
+});
+
+describe("loadEmbeddableFonts", () => {
+	it("reads a face into a data uri, carrying weight and style", async () => {
+		const warn = createWarningCollector({});
+		const [font] = await loadEmbeddableFonts(
+			[{ family: "Stub", file: realFile, weight: 600, style: "italic" }],
+			warn,
+		);
+
+		expect(font).toMatchObject({
+			family: "Stub",
+			format: "truetype",
+			weight: 600,
+			style: "italic",
+		});
+		expect(font?.source).toBe(
+			`data:font/ttf;base64,${Buffer.from("not a real font").toString("base64")}`,
+		);
+		expect(warn.warnings).toHaveLength(0);
+	});
+
+	it("skips a font collection and says why", async () => {
+		const warn = createWarningCollector({});
+		const fonts = await loadEmbeddableFonts(
+			[{ family: "Stub", file: collectionFile }],
+			warn,
+		);
+
+		expect(fonts).toHaveLength(0);
+		expect(warn.warnings[0]).toMatchObject({ code: "FONT_NOT_EMBEDDABLE" });
 	});
 });

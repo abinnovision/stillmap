@@ -1,5 +1,6 @@
 import type { Placement } from "./declaration.js";
 import type { Color } from "./filter.js";
+import type { EmbeddedFont } from "./fonts.js";
 import type { PlacedLabel } from "./labels.js";
 import type { PathGroup } from "./layout.js";
 import type { Attribution } from "./source.js";
@@ -27,6 +28,8 @@ export interface Scene {
 	readonly attributionPlacement: Placement;
 	readonly attributionColor?: Color;
 	readonly attributionFontSize?: number;
+	/** Written as `@font-face` rules so the SVG carries its own text. */
+	readonly embeddedFonts?: readonly EmbeddedFont[];
 }
 
 const ATTRIBUTION_FONT_SIZE = 9;
@@ -97,6 +100,25 @@ function renderLabel(label: PlacedLabel): string {
 	);
 }
 
+function renderFontFace(font: EmbeddedFont): string {
+	return (
+		`@font-face{font-family:"${escapeXml(font.family)}";` +
+		(font.weight === undefined ? "" : `font-weight:${String(font.weight)};`) +
+		(font.style === undefined ? "" : `font-style:${font.style};`) +
+		`src:url(${font.source}) format("${font.format}");}`
+	);
+}
+
+function renderFontFaces(scene: Scene): string {
+	const fonts = scene.embeddedFonts ?? [];
+
+	if (fonts.length === 0) {
+		return "";
+	}
+
+	return `<defs><style type="text/css">${fonts.map(renderFontFace).join("")}</style></defs>`;
+}
+
 function renderAttribution(scene: Scene): string {
 	const text = scene.attribution.map((entry) => entry.text).join(" ");
 
@@ -136,6 +158,7 @@ export function serializeScene(scene: Scene): string {
 			` height="${num(scene.height * scene.scale)}"` +
 			` viewBox="0 0 ${num(scene.width)} ${num(scene.height)}">`,
 	);
+	parts.push(renderFontFaces(scene));
 	parts.push(
 		`<rect width="${num(scene.width)}" height="${num(scene.height)}" fill="${escapeXml(scene.background)}"/>`,
 	);

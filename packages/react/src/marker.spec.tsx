@@ -126,6 +126,22 @@ describe("marker", () => {
 
 		expect(warn.warnings).toEqual([]);
 	});
+
+	it("passes the reserve opt-out through, and omits it by default", () => {
+		const [opted] = markers(
+			<Marker position={[0, 0]} size={[10, 10]} reserve={false}>
+				<circle />
+			</Marker>,
+		);
+		const [plain] = markers(
+			<Marker position={[0, 0]} size={[10, 10]}>
+				<circle />
+			</Marker>,
+		);
+
+		expect(opted).toMatchObject({ reserve: false });
+		expect(plain).not.toHaveProperty("reserve");
+	});
 });
 
 describe("pin", () => {

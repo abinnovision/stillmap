@@ -9,6 +9,7 @@ export type RenderWarningCode =
 	| "MARKER_OFFSCREEN"
 	| "MARKER_UNSUPPORTED_ELEMENT"
 	| "MARKER_IMAGE_NOT_INLINE"
+	| "FONT_NOT_EMBEDDABLE"
 	| "UNKNOWN_ELEMENT";
 
 export interface RenderWarning {

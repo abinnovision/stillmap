@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { renderScene } from "./render.js";
 import { createFixtureSource } from "../test/support/fixture-source.js";
 
-import type { LayerDeclaration } from "./declaration.js";
+import type { LayerDeclaration, MarkerDeclaration } from "./declaration.js";
 import type { RenderSceneArgs } from "./render.js";
 
 const declarations: LayerDeclaration[] = [
@@ -132,6 +132,53 @@ describe("renderScene", () => {
 				],
 			}),
 		).rejects.toThrow(/No font declared/);
+	});
+
+	/** Labels are the only text carrying a family; attribution sets none. */
+	function countLabels(svg: string): number {
+		return svg.split('font-family="Inter"').length - 1;
+	}
+
+	const covering: MarkerDeclaration = {
+		kind: "marker",
+		position: [9.9937, 53.5511],
+		size: [1200, 300],
+		anchor: "center",
+		markup: '<circle r="1" />',
+	};
+
+	it("drops labels a marker covers, and keeps them when reserve is false", async () => {
+		const shared = {
+			...base,
+			fonts: [{ family: "Inter", file: fontFile }],
+			labelDeclarations: [
+				{ kind: "labels", fontSize: 15, maxCount: 6 } as const,
+			],
+		};
+
+		const reserved = await renderScene({ ...shared, markers: [covering] });
+		const overlaid = await renderScene({
+			...shared,
+			markers: [{ ...covering, reserve: false }],
+		});
+
+		expect(countLabels(reserved.svg)).toBe(0);
+		expect(countLabels(overlaid.svg)).toBeGreaterThan(0);
+	});
+
+	it("embeds declared fonts only when asked", async () => {
+		const shared = {
+			...base,
+			fonts: [{ family: "Inter", file: fontFile }],
+			labelDeclarations: [{ kind: "labels", fontSize: 15 } as const],
+		};
+
+		const plain = await renderScene(shared);
+		const embedded = await renderScene({ ...shared, embedFonts: true });
+
+		expect(plain.svg).not.toContain("@font-face");
+		expect(embedded.svg).toContain('@font-face{font-family:"Inter"');
+		expect(embedded.svg).toContain("src:url(data:font/ttf;base64,");
 	});
 
 	it("places labels and reserves marker boxes against them", async () => {

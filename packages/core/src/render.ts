@@ -1,6 +1,10 @@
 import { markerOrigin } from "./declaration.js";
 import { decodeTile } from "./decode.js";
-import { assertFontCoversLabels, assertFontsExist } from "./fonts.js";
+import {
+	assertFontCoversLabels,
+	assertFontsExist,
+	loadEmbeddableFonts,
+} from "./fonts.js";
 import { placeLabels } from "./labels.js";
 import { buildPaths } from "./layout.js";
 import { computePixelBounds, lngLatToWorld, toCanvas } from "./mercator.js";
@@ -46,6 +50,14 @@ export interface RenderSceneArgs {
 	readonly labelDeclarations: readonly LabelDeclaration[];
 	readonly markers: readonly MarkerDeclaration[];
 	readonly fonts: readonly FontFace[];
+	/**
+	 * Write every declared font into the SVG as an `@font-face` data URI.
+	 *
+	 * Off by default: it costs the whole file, and the rasteriser opens fonts by
+	 * path and ignores the rules. Turn it on when the SVG itself has to travel,
+	 * because `font-family` alone resolves against whatever the viewer has.
+	 */
+	readonly embedFonts?: boolean;
 	readonly background?: Color;
 	readonly locale?: string;
 	readonly scale?: number;
@@ -221,12 +233,15 @@ function projectMarkers(args: ProjectMarkersArgs): ProjectedMarkers {
 			continue;
 		}
 
-		reserved.push({
-			minX: origin.x - pad,
-			minY: origin.y - pad,
-			maxX: origin.x + boxWidth + pad,
-			maxY: origin.y + boxHeight + pad,
-		});
+		if (marker.reserve !== false) {
+			reserved.push({
+				minX: origin.x - pad,
+				minY: origin.y - pad,
+				maxX: origin.x + boxWidth + pad,
+				maxY: origin.y + boxHeight + pad,
+			});
+		}
+
 		overlays.push({ markup: marker.markup, x: origin.x, y: origin.y });
 	}
 
@@ -357,6 +372,9 @@ export async function renderScene(
 		warn,
 	});
 
+	const embeddedFonts =
+		args.embedFonts === true ? await loadEmbeddableFonts(args.fonts, warn) : [];
+
 	const svg = serializeScene({
 		width: args.width,
 		height: args.height,
@@ -367,6 +385,7 @@ export async function renderScene(
 		overlays,
 		attribution: args.source.attribution,
 		attributionPlacement: args.attributionPlacement ?? "bottom-right",
+		embeddedFonts,
 	});
 
 	return {

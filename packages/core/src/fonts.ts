@@ -1,6 +1,9 @@
 import { existsSync } from "node:fs";
+import { readFile, stat } from "node:fs/promises";
 
 import { StillmapError } from "./errors.js";
+
+import type { WarningCollector } from "./warnings.js";
 
 export interface FontFace {
 	readonly family: string;
@@ -74,4 +77,98 @@ export function assertFontCoversLabels(
 			{ missing },
 		);
 	}
+}
+
+/** A face ready to be written into an SVG `@font-face` rule. */
+export interface EmbeddedFont {
+	readonly family: string;
+	readonly weight?: number;
+	readonly style?: "normal" | "italic";
+	/** `data:` URI carrying the whole file. */
+	readonly source: string;
+	readonly format: "opentype" | "truetype";
+}
+
+/**
+ * Formats a browser accepts inside `@font-face`. Collections are deliberately
+ * absent: `.ttc` and `.otc` hold several faces, no browser loads one through
+ * `@font-face`, and resvg reads them from the path anyway.
+ */
+const EMBEDDABLE: Readonly<
+	Record<
+		string,
+		{ readonly mime: string; readonly format: EmbeddedFont["format"] }
+	>
+> = {
+	".otf": { mime: "font/otf", format: "opentype" },
+	".ttf": { mime: "font/ttf", format: "truetype" },
+};
+
+function embeddableAs(file: string): (typeof EMBEDDABLE)[string] | undefined {
+	const extension = file.toLowerCase().slice(file.lastIndexOf("."));
+
+	return EMBEDDABLE[extension];
+}
+
+/**
+ * Encoded files, one entry per path. Re-encoding a megabyte of font on every
+ * render dominated the cost of an embedded SVG, and the stored timestamp means
+ * replacing the file still takes effect.
+ */
+const encoded = new Map<
+	string,
+	{ readonly mtimeMs: number; readonly uri: string }
+>();
+
+async function dataUri(file: string, mime: string): Promise<string> {
+	const { mtimeMs } = await stat(file);
+	const hit = encoded.get(file);
+
+	if (hit !== undefined && hit.mtimeMs === mtimeMs) {
+		return hit.uri;
+	}
+
+	const uri = `data:${mime};base64,${(await readFile(file)).toString("base64")}`;
+
+	encoded.set(file, { mtimeMs, uri });
+
+	return uri;
+}
+
+/**
+ * Reads every declared font into a data URI.
+ *
+ * The rasteriser never needs this: it opens the file by path. It exists so an
+ * SVG can be read somewhere else, where `font-family="Inter"` alone resolves
+ * against whatever fonts the viewer happens to have installed.
+ */
+export async function loadEmbeddableFonts(
+	fonts: readonly FontFace[],
+	warn: WarningCollector,
+): Promise<readonly EmbeddedFont[]> {
+	const loaded = await Promise.all(
+		fonts.map(async (font): Promise<EmbeddedFont | null> => {
+			const kind = embeddableAs(font.file);
+
+			if (kind === undefined) {
+				warn.warn(
+					"FONT_NOT_EMBEDDABLE",
+					`${font.file} cannot be embedded in an SVG. Only .ttf and .otf can; a font collection has to stay a file path.`,
+					{ family: font.family, file: font.file },
+				);
+
+				return null;
+			}
+
+			return {
+				family: font.family,
+				source: await dataUri(font.file, kind.mime),
+				format: kind.format,
+				...(font.weight === undefined ? {} : { weight: font.weight }),
+				...(font.style === undefined ? {} : { style: font.style }),
+			};
+		}),
+	);
+
+	return loaded.filter((font): font is EmbeddedFont => font !== null);
 }
