@@ -1,6 +1,7 @@
 import { renderMap } from "@stillmap/react";
 import { mkdir, writeFile } from "node:fs/promises";
 
+import { Brussels } from "./brussels.tsx";
 import { Locator } from "./locator.tsx";
 import { Offices } from "./offices.tsx";
 
@@ -35,15 +36,22 @@ export async function main(): Promise<void> {
 		format: "png",
 		scale: 2,
 	});
+	const brussels = await renderMap(<Brussels />, { format: "png", scale: 2 });
 
 	await writeFile(new URL("locator.png", OUT), locator.png);
 	await writeFile(new URL("locator.svg", OUT), locator.svg);
 	await writeFile(new URL("offices.png", OUT), offices.png);
 	await writeFile(new URL("offices.svg", OUT), offices.svg);
+	await writeFile(new URL("brussels.png", OUT), brussels.png);
+	await writeFile(new URL("brussels.svg", OUT), brussels.svg);
 
-	for (const warning of [...locator.warnings, ...offices.warnings]) {
+	for (const warning of [
+		...locator.warnings,
+		...offices.warnings,
+		...brussels.warnings,
+	]) {
 		process.stdout.write(`warning ${warning.code}: ${warning.message}\n`);
 	}
 
-	process.stdout.write(`wrote 4 files to ${OUT.pathname}\n`);
+	process.stdout.write(`wrote 6 files to ${OUT.pathname}\n`);
 }
