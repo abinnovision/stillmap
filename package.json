@@ -27,6 +27,7 @@
 		"postinstall": "husky",
 		"sort:check": "sort-package-json '{examples,packages}/**!(node_modules)/package.json' 'package.json' --check",
 		"sort:fix": "sort-package-json '{examples,packages}/**!(node_modules)/package.json' 'package.json'",
+		"test-integration": "vitest run --project '*#integration' --passWithNoTests",
 		"test-unit": "vitest --run --coverage",
 		"test-unit:watch": "vitest"
 	},
