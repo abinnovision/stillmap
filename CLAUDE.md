@@ -17,6 +17,7 @@ below are the parts that must hold regardless.
 | `packages/cli`      | `stillmap dev`, the preview server. Bundles with esbuild.       |
 | `packages/tsconfig` | Private shared TypeScript base. Never published.                |
 | `examples/basic`    | Runnable example and golden-image regression suite.             |
+| `examples/nextjs`   | Next.js app serving cached renders over HTTP.                   |
 
 Dependencies run one way only: `cli` to `react` to `sources` to `core`.
 
@@ -40,7 +41,10 @@ Requires corepack (`corepack enable`) so `yarn` resolves to the 4.18.0 pinned in
 - Relative imports inside `packages/*` carry a `.js` extension, because `module`
   is `nodenext`. `examples/*` is the exception: it runs straight from source
   under Node's type stripping, which resolves specifiers literally, so it sets
-  `allowImportingTsExtensions` and imports `.ts`.
+  `allowImportingTsExtensions` and imports `.ts`. `examples/nextjs` is a further
+  exception in the other direction: it runs under a bundler rather than type
+  stripping, so it uses `moduleResolution: "bundler"`, `jsx: "preserve"`, and
+  extensionless imports. Every strictness flag in the shared base still applies.
 - The shared base sets `"types": ["node"]` explicitly. TypeScript 6 does not
   auto-discover `@types` hoisted to the workspace root, and naming the types
   keeps the ambient surface deterministic. Every package lists `@types/node`.

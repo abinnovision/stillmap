@@ -96,6 +96,9 @@ export default {
 The working directory is the app root in every environment that runs a Next
 server, including the standalone output and a container image.
 
+`examples/nextjs` is a complete Next application built this way, including the
+caching a per-request map needs.
+
 ### Bundlers generally
 
 If a bundler may rewrite your asset paths, resolve at runtime from a directory

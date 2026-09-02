@@ -25,7 +25,8 @@ If you are rendering more than a handful of maps:
 - Reuse one process so the tile cache is warm. Maps of the same city share
   almost all their tiles.
 - Cache the **output**, not just the tiles. A locator banner for a fixed address
-  changes only when your style changes.
+  changes only when your style changes. `examples/nextjs` does this behind an
+  HTTP route.
 - For sustained or commercial volume, self-host, use PMTiles, or pay a provider.
   MapTiler and Stadia both serve the same OpenMapTiles schema, so switching is a
   one-line source change and no style edits.
