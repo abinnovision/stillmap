@@ -1,10 +1,12 @@
 import { renderMap } from "@stillmap/react";
+import { NEUTRAL } from "@stillmap/styles";
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { Locator } from "./locator.tsx";
 import { Offices } from "./offices.tsx";
+import { PRESET_NAMES, PresetCard } from "./presets.tsx";
 import { createFixtureSource } from "../test/support/fixture-source.ts";
 
 import type { Office } from "./offices.tsx";
@@ -73,7 +75,7 @@ describe("locator", () => {
 		);
 
 		expect(svg).toContain("OpenFreeMap");
-		expect(svg).toContain("#9DB59D");
+		expect(svg).toContain(NEUTRAL.chrome.marker);
 		expect(svg).toContain("<text");
 	});
 
@@ -109,5 +111,27 @@ describe("offices", () => {
 		maybeUpdate("offices", svg);
 
 		expect(svg).toBe(readGolden("offices"));
+	});
+});
+
+describe.each(PRESET_NAMES)("preset %s", (preset) => {
+	it("renders with no schema gaps", async () => {
+		const result = await renderMap(
+			<PresetCard preset={preset} position={HAMBURG} source={source} />,
+		);
+
+		expect(result.warnings.filter((w) => w.code.startsWith("SCHEMA_"))).toEqual(
+			[],
+		);
+	});
+
+	it("matches its golden", async () => {
+		const { svg } = await renderMap(
+			<PresetCard preset={preset} position={HAMBURG} source={source} />,
+		);
+
+		maybeUpdate(`preset-${preset}`, svg);
+
+		expect(svg).toBe(readGolden(`preset-${preset}`));
 	});
 });

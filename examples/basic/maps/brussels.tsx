@@ -2,7 +2,7 @@ import { Brussels } from "../src/brussels.tsx";
 
 import type { ReactNode } from "react";
 
-/** Mapbox light-v11, partially reconstructed. See `src/mapbox-light.tsx`. */
+/** The `Light` style at a wide crop. See `src/brussels.tsx`. */
 const BrusselsPreview = (): ReactNode => <Brussels />;
 
 export default BrusselsPreview;

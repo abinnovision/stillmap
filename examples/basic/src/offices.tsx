@@ -1,8 +1,8 @@
 import { Attribution, Font, Map, Marker } from "@stillmap/react";
 import { openFreeMap } from "@stillmap/sources";
+import { Neutral, NEUTRAL } from "@stillmap/styles";
 
 import { INTER } from "./assets.ts";
-import { Neutral } from "./style.tsx";
 
 import type { LngLat, TileSource } from "@stillmap/core";
 import type { ReactNode } from "react";
@@ -29,7 +29,7 @@ export const Offices = ({
 		maxZoom={14}
 		width={900}
 		height={600}
-		background="#F5F5F3"
+		background={NEUTRAL.chrome.background}
 	>
 		<Font family="Inter" file={INTER} />
 
@@ -47,8 +47,8 @@ export const Offices = ({
 					cx="9"
 					cy="9"
 					r="7"
-					fill="#9DB59D"
-					stroke="#FFFFFF"
+					fill={NEUTRAL.chrome.marker}
+					stroke={NEUTRAL.chrome.markerStroke}
 					strokeWidth="2"
 				/>
 			</Marker>
