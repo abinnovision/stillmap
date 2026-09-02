@@ -3,14 +3,16 @@ import { createHash } from "node:crypto";
 import type { Store } from "../stores";
 
 /**
- * Bump when `src/map/style.tsx` changes. Map URLs are served `immutable`, so
- * nothing else will ever invalidate a cached render: forget this and every
- * visitor keeps the old map indefinitely.
+ * Bump when anything that changes a render changes: `src/map/style.tsx`, the
+ * label declarations in `src/map/store-map.tsx`, or a stillmap upgrade that
+ * alters placement. Map URLs are served `immutable`, so nothing else will ever
+ * invalidate a cached render: forget this and every visitor keeps the old map
+ * indefinitely.
  *
  * A stricter alternative is to hash a canonical render at startup, which
  * removes the discipline at the cost of a render on boot.
  */
-export const STYLE_VERSION = 1;
+export const STYLE_VERSION = 2;
 
 export interface RenderKeyInput {
 	readonly storeId: string;

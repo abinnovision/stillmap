@@ -37,8 +37,32 @@ const sharedCache = createTileCache();
 const DEFAULT_LABEL_FONT_SIZE = 12;
 const DEFAULT_LABEL_COLOR = "#6E6E68";
 const DEFAULT_HALO_WIDTH = 3;
-const DEFAULT_MAX_LABELS = 12;
 const DEFAULT_BACKGROUND = "#FFFFFF";
+
+/**
+ * Canvas area, in square pixels, that the default budget allows per label.
+ *
+ * A flat count cannot be a sensible default: the same number is too tight on a
+ * poster and too loose on a banner. Sized so a 1200x300 banner keeps the flat
+ * budget of 12 this replaced. Collision alone settles far denser than this on
+ * live tiles, down to about 8000 square pixels per label over a city centre,
+ * which is well past readable, so the ceiling is meant to bind there.
+ */
+const AREA_PER_LABEL = 30_000;
+
+/**
+ * Default placement budget for one label element.
+ *
+ * Deliberately a ceiling rather than a density control. Splitting one canvas
+ * budget evenly across elements was measured to undershoot by roughly four
+ * times, because place classes are not evenly populated: a `city` element with
+ * one feature in view leaves its share unspent while an abundant `suburb`
+ * element is throttled. Density is `maxRank`'s job; this only stops a
+ * pathological tile from emitting hundreds of labels.
+ */
+function defaultMaxLabels(width: number, height: number): number {
+	return Math.max(1, Math.ceil((width * height) / AREA_PER_LABEL));
+}
 
 export interface RenderSceneArgs {
 	readonly source: TileSource;
@@ -87,13 +111,24 @@ interface LabelContext {
 interface CandidateArgs {
 	readonly feature: DecodedFeature;
 	readonly declaration: LabelDeclaration;
+	/** Position of the declaration in the style. Scopes its `maxCount`. */
+	readonly element: number;
+	/** Budget this element gets when it declares no `maxCount` of its own. */
+	readonly defaultMaxCount: number;
 	readonly context: LabelContext;
 	readonly fallbackFamily: string;
 }
 
 /** Builds one candidate, or null when the feature carries no usable label. */
 function labelCandidateFor(args: CandidateArgs): LabelCandidate | null {
-	const { feature, declaration, context, fallbackFamily } = args;
+	const {
+		feature,
+		declaration,
+		element,
+		defaultMaxCount,
+		context,
+		fallbackFamily,
+	} = args;
 	const { args: scene, zoom } = context;
 
 	// Only point geometry carries a place label.
@@ -104,6 +139,15 @@ function labelCandidateFor(args: CandidateArgs): LabelCandidate | null {
 	if (
 		declaration.classes !== undefined &&
 		!declaration.classes.includes(String(feature.properties["class"]))
+	) {
+		return null;
+	}
+
+	const rank = scene.source.schema.resolveRank(feature.properties);
+
+	if (
+		declaration.maxRank !== undefined &&
+		rank > resolveZoomable(declaration.maxRank, zoom)
 	) {
 		return null;
 	}
@@ -122,7 +166,7 @@ function labelCandidateFor(args: CandidateArgs): LabelCandidate | null {
 		text,
 		anchor: toCanvas(point, context.bounds),
 		priority: declaration.priority ?? 0,
-		rank: scene.source.schema.resolveRank(feature.properties),
+		rank,
 		fontSize: resolveZoomable(
 			declaration.fontSize ?? DEFAULT_LABEL_FONT_SIZE,
 			zoom,
@@ -133,7 +177,8 @@ function labelCandidateFor(args: CandidateArgs): LabelCandidate | null {
 		color: declaration.color ?? DEFAULT_LABEL_COLOR,
 		...(declaration.halo === undefined ? {} : { halo: declaration.halo }),
 		haloWidth: declaration.haloWidth ?? DEFAULT_HALO_WIDTH,
-		maxCount: declaration.maxCount ?? DEFAULT_MAX_LABELS,
+		maxCount: resolveZoomable(declaration.maxCount ?? defaultMaxCount, zoom),
+		element,
 	};
 }
 
@@ -151,7 +196,9 @@ function buildLabelCandidates(
 	 */
 	const seen = new Set<string>();
 
-	for (const declaration of args.labelDeclarations) {
+	const defaultMaxCount = defaultMaxLabels(args.width, args.height);
+
+	for (const [element, declaration] of args.labelDeclarations.entries()) {
 		if (
 			zoom < (declaration.minZoom ?? -Infinity) ||
 			zoom > (declaration.maxZoom ?? Infinity)
@@ -163,6 +210,8 @@ function buildLabelCandidates(
 			const candidate = labelCandidateFor({
 				feature,
 				declaration,
+				element,
+				defaultMaxCount,
 				context,
 				fallbackFamily,
 			});
@@ -195,8 +244,8 @@ interface ProjectedMarkers {
 }
 
 /**
- * Projects markers and reserves their boxes. This runs before label placement
- * so labels route around markers rather than under them.
+ * Projects markers, reserving a box only for those that ask. This runs before
+ * label placement so a reserving marker's labels route around it.
  */
 interface ProjectMarkersArgs {
 	readonly markers: readonly MarkerDeclaration[];
@@ -233,7 +282,7 @@ function projectMarkers(args: ProjectMarkersArgs): ProjectedMarkers {
 			continue;
 		}
 
-		if (marker.reserve !== false) {
+		if (marker.reserve === true) {
 			reserved.push({
 				minX: origin.x - pad,
 				minY: origin.y - pad,

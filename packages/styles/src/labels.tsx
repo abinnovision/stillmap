@@ -8,10 +8,11 @@ import type { ReactNode } from "react";
  * The typographic half of one label tier, taken from `PlaceLabels` itself so
  * the two cannot drift. Colour comes from the palette instead.
  */
-export type LabelTier = Pick<PlaceLabelsProps, "haloWidth" | "letterSpacing"> &
-	Required<
-		Pick<PlaceLabelsProps, "fontSize" | "fontWeight" | "maxCount" | "priority">
-	>;
+export type LabelTier = Pick<
+	PlaceLabelsProps,
+	"haloWidth" | "letterSpacing" | "maxCount"
+> &
+	Required<Pick<PlaceLabelsProps, "fontSize" | "fontWeight" | "priority">>;
 
 /** One tier per `LabelPalette` colour, in the same order. */
 export interface LabelScale {
@@ -24,6 +25,39 @@ export interface PlaceLabelBlockProps {
 	readonly palette: LabelPalette;
 	readonly scale: LabelScale;
 	readonly fontFamily?: string;
+}
+
+/**
+ * Highest place rank each tier will place, by zoom.
+ *
+ * Rank is quantized rather than continuous in OpenMapTiles. Measured across six
+ * regions on live tiles, raising the threshold from 10 to 13 takes central
+ * Hamburg at z8 from 5 labels to 42, while anything above about 25 changes
+ * nothing at all. A smooth curve fits that badly, so these steps sit on the
+ * cliffs the data actually has.
+ *
+ * One curve serves all three tiers because rank already encodes the hierarchy:
+ * a city ranks around 3 and a suburb 12 or worse, so a low threshold drops the
+ * minor tiers at low zoom without a separate zoom gate per tier.
+ */
+function placeRank(zoom: number): number {
+	if (zoom < 5) {
+		return 4;
+	}
+
+	if (zoom < 7) {
+		return 8;
+	}
+
+	if (zoom < 11) {
+		return 13;
+	}
+
+	if (zoom < 13) {
+		return 16;
+	}
+
+	return 30;
 }
 
 /**
@@ -48,20 +82,23 @@ export const PlaceLabelBlock = ({
 				classes="city"
 				color={palette.primary}
 				halo={palette.halo}
+				maxRank={placeRank}
 				{...scale.primary}
 				{...family}
 			/>
 			<PlaceLabels
-				classes={["town", "suburb"]}
+				classes={["town", "village", "suburb"]}
 				color={palette.secondary}
 				halo={palette.halo}
+				maxRank={placeRank}
 				{...scale.secondary}
 				{...family}
 			/>
 			<PlaceLabels
-				classes={["quarter", "neighbourhood"]}
+				classes={["quarter", "neighbourhood", "hamlet"]}
 				color={palette.tertiary}
 				halo={palette.halo}
+				maxRank={placeRank}
 				{...scale.tertiary}
 				{...family}
 			/>

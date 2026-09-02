@@ -52,7 +52,17 @@ export interface LabelDeclaration {
 	readonly fontSize?: Zoomable<number>;
 	readonly fontWeight?: number;
 	readonly letterSpacing?: number;
-	readonly maxCount?: number;
+	/**
+	 * Placement budget for this element alone, spent independently of every
+	 * other label element. Defaults to a budget derived from the canvas area.
+	 */
+	readonly maxCount?: Zoomable<number>;
+	/**
+	 * Highest source rank to consider, inclusive. Rank is place prominence from
+	 * the tile: lower is more prominent, and a place with no rank sorts last.
+	 * Unset considers every rank.
+	 */
+	readonly maxRank?: Zoomable<number>;
 	/** Lower wins a collision. */
 	readonly priority?: number;
 }
@@ -66,8 +76,9 @@ export interface MarkerDeclaration {
 	readonly padding?: number;
 	/**
 	 * Whether the marker claims its box against label collision. Defaults to
-	 * true. Setting it false draws the marker without reserving anything, so
-	 * labels place as though it were not there and it may cover them.
+	 * false, so labels place as though the marker were not there and it may
+	 * cover them. Set it true to keep the box clear and lose the labels that
+	 * would have fallen under the marker.
 	 */
 	readonly reserve?: boolean;
 	/** Pre-rendered SVG markup for the marker's children. */
