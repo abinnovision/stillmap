@@ -17,6 +17,7 @@ below are the parts that must hold regardless.
 | `packages/cli`      | `stillmap dev`, the preview server. Bundles with esbuild.       |
 | `packages/tsconfig` | Private shared TypeScript base. Never published.                |
 | `examples/basic`    | Runnable example and golden-image regression suite.             |
+| `demo/`             | Standalone playground. npm, published packages, outside Yarn.   |
 
 Dependencies run one way only: `cli` to `react` to `sources` to `core`.
 
