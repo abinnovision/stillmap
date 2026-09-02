@@ -1,8 +1,8 @@
-import { Attribution, Font, Map, Pin, PlaceLabels } from "@stillmap/react";
+import { Attribution, Font, Map, Pin } from "@stillmap/react";
 import { openFreeMap } from "@stillmap/sources";
+import { Neutral, NEUTRAL } from "@stillmap/styles";
 
 import { INTER } from "./assets.ts";
-import { Neutral } from "./style.tsx";
 
 import type { LngLat, TileSource } from "@stillmap/core";
 import type { ReactNode } from "react";
@@ -14,7 +14,13 @@ export interface LocatorProps {
 	readonly height?: number;
 }
 
-/** The locator banner: one place, one marker, a wide crop. */
+/**
+ * The locator banner: one place, one marker, a wide crop.
+ *
+ * The style paints the tiles and the labels. The background beneath them and
+ * the marker over them are not its to draw, so they come from its palette
+ * instead.
+ */
 export const Locator = ({
 	position,
 	source = openFreeMap(),
@@ -27,44 +33,13 @@ export const Locator = ({
 		zoom={13}
 		width={width}
 		height={height}
-		background="#F5F5F3"
+		background={NEUTRAL.chrome.background}
 	>
 		<Font family="Inter" file={INTER} />
 
 		<Neutral />
 
-		<PlaceLabels
-			classes="city"
-			fontSize={15}
-			fontWeight={600}
-			letterSpacing={0.3}
-			maxCount={3}
-			priority={0}
-			color="#6E6E68"
-			halo="#F5F5F3"
-		/>
-		<PlaceLabels
-			classes="town"
-			fontSize={13}
-			fontWeight={600}
-			letterSpacing={0.26}
-			maxCount={4}
-			priority={1}
-			color="#6E6E68"
-			halo="#F5F5F3"
-		/>
-		<PlaceLabels
-			classes={["suburb", "quarter"]}
-			fontSize={11.5}
-			fontWeight={500}
-			letterSpacing={0.58}
-			maxCount={6}
-			priority={3}
-			color="#6E6E68"
-			halo="#F5F5F3"
-		/>
-
-		<Pin position={position} fill="#9DB59D" padding={8} />
+		<Pin position={position} fill={NEUTRAL.chrome.marker} padding={8} />
 		<Attribution placement="bottom-right" />
 	</Map>
 );
