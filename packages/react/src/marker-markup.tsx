@@ -1,8 +1,9 @@
+import { createRequire } from "node:module";
 import { Fragment, isValidElement } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 
 import type { WarningCollector } from "@stillmap/core";
 import type { ReactElement, ReactNode } from "react";
+import type * as ReactDomServer from "react-dom/server";
 
 /**
  * SVG elements resvg renders. Anything else, `foreignObject` included, is
@@ -111,6 +112,24 @@ function validate(node: ReactNode, warn: WarningCollector): boolean {
 	return validateElement(node, warn);
 }
 
+type ServerRenderer = typeof ReactDomServer;
+
+let cached: ServerRenderer | null = null;
+
+/**
+ * `react-dom/server` is loaded on first use rather than imported at the top of
+ * the file. A static import makes this module unbundlable by frameworks that
+ * refuse `react-dom/server` in a server graph, Next's App Router among them,
+ * and markers are the only thing that needs it.
+ */
+function serverRenderer(): ServerRenderer {
+	cached ??= createRequire(import.meta.url)(
+		"react-dom/server",
+	) as ServerRenderer;
+
+	return cached;
+}
+
 /**
  * Validates a marker subtree, then renders it. Returns the markup, or an empty
  * string when nothing survived validation.
@@ -123,5 +142,5 @@ export function renderOverlay(
 		return "";
 	}
 
-	return renderToStaticMarkup(<Fragment>{children}</Fragment>);
+	return serverRenderer().renderToStaticMarkup(<Fragment>{children}</Fragment>);
 }
