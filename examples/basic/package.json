@@ -28,7 +28,8 @@
 	"prettier": "@abinnovision/prettier-config",
 	"dependencies": {
 		"@stillmap/react": "workspace:^",
-		"@stillmap/sources": "workspace:^"
+		"@stillmap/sources": "workspace:^",
+		"@stillmap/styles": "workspace:^"
 	},
 	"devDependencies": {
 		"@abinnovision/eslint-config-base": "^3.4.2",
