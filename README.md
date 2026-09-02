@@ -8,10 +8,8 @@
 Describe a map as JSX, get back an SVG string or a PNG buffer. No browser, no
 canvas, no native map library, and no API key.
 
-[See what it renders](https://abinnovision.github.io/stillmap/): every example
-beside the JSX that produced it. Or
-[open it in CodeSandbox](https://codesandbox.io/p/devbox/github/abinnovision/stillmap)
-to run the Next.js store finder against live tiles.
+[Open it in CodeSandbox](https://codesandbox.io/p/devbox/github/abinnovision/stillmap)
+to run the Next.js store finder against live tiles, without a checkout.
 
 ## Getting started
 
