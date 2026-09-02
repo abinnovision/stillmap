@@ -68,14 +68,12 @@ const SCALE: LabelScale = {
 		fontSize: 19,
 		fontWeight: 600,
 		haloWidth: 1.6,
-		maxCount: 2,
 		priority: 0,
 	},
 	secondary: {
 		fontSize: 14,
 		fontWeight: 500,
 		haloWidth: 1.4,
-		maxCount: 8,
 		priority: 1,
 	},
 	tertiary: {
@@ -83,7 +81,6 @@ const SCALE: LabelScale = {
 		fontWeight: 500,
 		letterSpacing: 0.9,
 		haloWidth: 1.2,
-		maxCount: 10,
 		priority: 2,
 	},
 };

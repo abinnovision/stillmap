@@ -19,6 +19,7 @@ function candidate(overrides: Partial<LabelCandidate> = {}): LabelCandidate {
 		color: "#6E6E68",
 		haloWidth: 3,
 		maxCount: 10,
+		element: 0,
 		...overrides,
 	};
 }
@@ -127,5 +128,69 @@ describe("placeLabels", () => {
 		});
 
 		expect(placed.map((p) => p.text)).toEqual(["A", "B"]);
+	});
+
+	it("slides a box overhanging an edge back inside rather than dropping it", () => {
+		const placed = placeLabels({
+			candidates: [
+				candidate({ text: "Altona-Altstadt", anchor: canvas(395, 150) }),
+			],
+			reserved: [],
+			width: 400,
+			height: 300,
+			warn: createWarningCollector({}),
+		});
+
+		expect(placed).toHaveLength(1);
+
+		const [label] = placed as [(typeof placed)[number]];
+
+		expect(label.box.maxX).toBeLessThanOrEqual(400);
+		expect(label.box.minX).toBeGreaterThanOrEqual(0);
+		// The drawn text follows the box, or the two would disagree.
+		expect(label.anchor.x).toBeLessThan(395);
+	});
+
+	it("drops a label too wide for the canvas to hold", () => {
+		const placed = placeLabels({
+			candidates: [
+				candidate({ text: "A".repeat(200), anchor: canvas(200, 150) }),
+			],
+			reserved: [],
+			width: 400,
+			height: 300,
+			warn: createWarningCollector({}),
+		});
+
+		expect(placed).toEqual([]);
+	});
+
+	it("gives each element its own budget rather than a shared one", () => {
+		const placed = placeLabels({
+			candidates: [
+				candidate({ text: "A1", anchor: canvas(60, 40), maxCount: 2 }),
+				candidate({ text: "A2", anchor: canvas(60, 140), maxCount: 2 }),
+				candidate({
+					text: "B1",
+					anchor: canvas(260, 40),
+					maxCount: 2,
+					element: 1,
+					priority: 1,
+				}),
+				candidate({
+					text: "B2",
+					anchor: canvas(260, 140),
+					maxCount: 2,
+					element: 1,
+					priority: 1,
+				}),
+			],
+			reserved: [],
+			width: 400,
+			height: 300,
+			warn: createWarningCollector({}),
+		});
+
+		expect(placed.map((p) => p.text)).toEqual(["A1", "A2", "B1", "B2"]);
 	});
 });

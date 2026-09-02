@@ -23,8 +23,8 @@ export interface MarkerProps {
 	readonly padding?: number;
 	/**
 	 * Whether the marker claims its box against label collision. Defaults to
-	 * true. Set it false to draw the marker over the labels instead of losing
-	 * the ones underneath it.
+	 * false, drawing the marker over any label beneath it. Set it true to keep
+	 * the box clear instead, at the cost of the labels that fall inside it.
 	 */
 	readonly reserve?: boolean;
 	readonly children: ReactNode;
@@ -54,7 +54,7 @@ export interface PinProps {
 	/** Defaults to `"bottom"`. */
 	readonly anchor?: MarkerAnchor;
 	readonly padding?: number;
-	/** See `MarkerProps.reserve`. Defaults to true. */
+	/** See `MarkerProps.reserve`. Defaults to false. */
 	readonly reserve?: boolean;
 }
 

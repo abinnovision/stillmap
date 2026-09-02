@@ -18,8 +18,18 @@ export interface PlaceLabelsProps {
 	readonly fontSize?: Zoomable<number>;
 	readonly fontWeight?: number;
 	readonly letterSpacing?: number;
-	/** Placement budget for this element alone. */
-	readonly maxCount?: number;
+	/**
+	 * Placement budget for this element alone. Defaults to a budget derived from
+	 * the canvas area, so a tall map carries more labels than a banner.
+	 */
+	readonly maxCount?: Zoomable<number>;
+	/**
+	 * Highest source rank to place, inclusive. Rank is place prominence from the
+	 * tile: lower is more prominent. This is the knob that thins labels as the
+	 * map zooms out, because it drops the least prominent places rather than
+	 * whichever ones happen to sort last.
+	 */
+	readonly maxRank?: Zoomable<number>;
 	/** Lower wins a collision against another label element. */
 	readonly priority?: number;
 }
@@ -35,6 +45,7 @@ const OPTIONAL = [
 	"fontWeight",
 	"letterSpacing",
 	"maxCount",
+	"maxRank",
 	"priority",
 ] as const;
 

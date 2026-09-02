@@ -135,7 +135,9 @@ describe("renderScene", () => {
 	});
 
 	/** Labels are the only text carrying a family; attribution sets none. */
-	function countLabels(svg: string): number {
+	function countLabels(rendered: string | { readonly svg: string }): number {
+		const svg = typeof rendered === "string" ? rendered : rendered.svg;
+
 		return svg.split('font-family="Inter"').length - 1;
 	}
 
@@ -147,7 +149,7 @@ describe("renderScene", () => {
 		markup: '<circle r="1" />',
 	};
 
-	it("drops labels a marker covers, and keeps them when reserve is false", async () => {
+	it("keeps labels under a marker unless it asks to reserve", async () => {
 		const shared = {
 			...base,
 			fonts: [{ family: "Inter", file: fontFile }],
@@ -156,14 +158,14 @@ describe("renderScene", () => {
 			],
 		};
 
-		const reserved = await renderScene({ ...shared, markers: [covering] });
-		const overlaid = await renderScene({
+		const overlaid = await renderScene({ ...shared, markers: [covering] });
+		const reserved = await renderScene({
 			...shared,
-			markers: [{ ...covering, reserve: false }],
+			markers: [{ ...covering, reserve: true }],
 		});
 
-		expect(countLabels(reserved.svg)).toBe(0);
 		expect(countLabels(overlaid.svg)).toBeGreaterThan(0);
+		expect(countLabels(reserved.svg)).toBe(0);
 	});
 
 	it("embeds declared fonts only when asked", async () => {
@@ -179,6 +181,92 @@ describe("renderScene", () => {
 		expect(plain.svg).not.toContain("@font-face");
 		expect(embedded.svg).toContain('@font-face{font-family:"Inter"');
 		expect(embedded.svg).toContain("src:url(data:font/ttf;base64,");
+	});
+
+	it("spends a maxCount per label element rather than across them", async () => {
+		const result = await renderScene({
+			...base,
+			fonts: [{ family: "Inter", file: fontFile }],
+			labelDeclarations: [
+				{
+					kind: "labels",
+					classes: ["city"],
+					fontSize: 15,
+					maxCount: 1,
+					priority: 0,
+				},
+				{
+					kind: "labels",
+					classes: ["town", "suburb"],
+					fontSize: 11,
+					maxCount: 1,
+					priority: 1,
+				},
+			],
+		});
+
+		expect(countLabels(result.svg)).toBe(2);
+	});
+
+	/*
+	 * The fixture's place layer carries Hamburg at rank 3 and its suburbs from
+	 * rank 12 up, so a threshold between the two isolates the city.
+	 */
+	it("drops places above the declared maxRank", async () => {
+		const shared = {
+			...base,
+			fonts: [{ family: "Inter", file: fontFile }],
+		};
+
+		const prominent = await renderScene({
+			...shared,
+			labelDeclarations: [{ kind: "labels", fontSize: 15, maxRank: 5 }],
+		});
+		const everything = await renderScene({
+			...shared,
+			labelDeclarations: [{ kind: "labels", fontSize: 15, maxRank: 100 }],
+		});
+
+		expect(countLabels(prominent)).toBe(1);
+		expect(countLabels(everything)).toBeGreaterThan(1);
+	});
+
+	it("resolves a zoom-varying maxRank at the render zoom", async () => {
+		const shared = {
+			...base,
+			fonts: [{ family: "Inter", file: fontFile }],
+			labelDeclarations: [
+				{
+					kind: "labels",
+					fontSize: 15,
+					maxRank: (zoom: number) => (zoom < 13.5 ? 5 : 100),
+				} as const,
+			],
+		};
+
+		const shallow = await renderScene({ ...shared, zoom: 13 });
+		const deep = await renderScene({ ...shared, zoom: 13.9 });
+
+		expect(countLabels(deep)).toBeGreaterThan(countLabels(shallow));
+	});
+
+	/*
+	 * A flat default cannot suit both a banner and a poster, so the budget an
+	 * element gets when it declares none is derived from the canvas area.
+	 */
+	it("scales the default label budget with the canvas", async () => {
+		const shared = {
+			...base,
+			fonts: [{ family: "Inter", file: fontFile }],
+			labelDeclarations: [{ kind: "labels", fontSize: 15 } as const],
+		};
+
+		const banner = await renderScene({ ...shared, height: 300 });
+		const poster = await renderScene({ ...shared, height: 1200 });
+
+		expect(countLabels(poster)).toBeGreaterThan(countLabels(banner));
+		// Above the flat budget of 12 this replaced, so the scaling is real.
+		expect(countLabels(poster)).toBeGreaterThan(12);
 	});
 
 	it("places labels and reserves marker boxes against them", async () => {
