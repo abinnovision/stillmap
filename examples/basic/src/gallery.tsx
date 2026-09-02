@@ -38,9 +38,9 @@ const ENTRIES: readonly Entry[] = [
 		id: "locator",
 		title: "Locator",
 		blurb:
-			"One place, one marker, a wide crop. Three tiers of place label, each " +
-			"with its own count and priority, so the densest tier drops first when " +
-			"the labels collide.",
+			"One place, one marker, a wide crop. The style paints the tiles and " +
+			"the labels; the background beneath them and the marker over them are " +
+			"not its to draw, so both come from its palette.",
 		element: <Locator position={HAMBURG} />,
 		source: "src/locator.tsx",
 	},
@@ -58,9 +58,9 @@ const ENTRIES: readonly Entry[] = [
 		id: "brussels",
 		title: "A reconstructed style",
 		blurb:
-			"Mapbox light-v11, rebuilt as components over OpenFreeMap tiles. The " +
-			"style it pulls in lives in src/mapbox-light.tsx: a style is just a " +
-			"component, so there is no style-packaging API because none is needed.",
+			"A second city in the Light style, at a wider crop where the inverted " +
+			"contrast has room to read. The pin opts out of claiming its box so " +
+			"the place label underneath survives.",
 		element: <Brussels />,
 		source: "src/brussels.tsx",
 	},

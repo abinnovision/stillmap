@@ -1,8 +1,8 @@
 import { Attribution, Font, Map, Pin } from "@stillmap/react";
 import { openFreeMap } from "@stillmap/sources";
+import { Light, LIGHT } from "@stillmap/styles";
 
 import { INTER } from "./assets.ts";
-import { LIGHT, MapboxLight, MapboxLightLabels } from "./mapbox-light.tsx";
 
 import type { LngLat, TileSource } from "@stillmap/core";
 import type { ReactNode } from "react";
@@ -17,20 +17,14 @@ export interface BrusselsProps {
 }
 
 /**
- * A partial reconstruction of a Mapbox light-v11 static map, matching the
- * centre, zoom and size of
+ * A second city in the `Light` style, at a wider crop than the locator, where
+ * the inverted contrast has room to read.
  *
- *   api.mapbox.com/styles/v1/mapbox/light-v11/static
- *     /pin-s+668CAA(4.36066,50.84674)/4.36066,50.84674,12/1200x300@2x
- *
- * The tiles are OpenFreeMap rather than Mapbox, so the two will never agree
- * feature for feature. The style is what is being reproduced.
- *
- * The pin sits on the same point as the "Brussels" place label. A marker
- * claims its box against label collision by default, which would drop that
- * label, so this one opts out with `reserve={false}` and draws over the labels
- * instead. Mapbox nudges the label aside; stillmap has no displacement, so the
- * choice is between losing the label and overlapping it.
+ * The pin sits on the same point as the "Brussels" place label. A marker claims
+ * its box against label collision by default, which would drop that label, so
+ * this one opts out with `reserve={false}` and draws over the labels instead.
+ * stillmap has no label displacement, so the choice is between losing the label
+ * and overlapping it.
  */
 export const Brussels = ({
 	source = openFreeMap(),
@@ -44,15 +38,19 @@ export const Brussels = ({
 		zoom={zoom}
 		width={width}
 		height={height}
-		background={LIGHT.background}
+		background={LIGHT.chrome.background}
 		locale="en"
 	>
 		<Font family="Inter" file={INTER} />
 
-		<MapboxLight />
-		<MapboxLightLabels />
+		<Light />
 
-		<Pin position={BRUSSELS} fill="#668CAA" size={[22, 29]} reserve={false} />
+		<Pin
+			position={BRUSSELS}
+			fill={LIGHT.chrome.marker}
+			size={[22, 29]}
+			reserve={false}
+		/>
 		<Attribution placement="bottom-right" />
 	</Map>
 );

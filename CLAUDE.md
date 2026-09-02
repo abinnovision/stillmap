@@ -14,12 +14,15 @@ below are the parts that must hold regardless.
 | `packages/core`     | Engine. No React, no native dependency. Owns every shared type. |
 | `packages/sources`  | Tile sources and schema adapters.                               |
 | `packages/react`    | JSX declaration API and `renderMap()`.                          |
+| `packages/styles`   | Ready-made styles and their palettes. JSX only.                 |
 | `packages/cli`      | `stillmap dev`, the preview server. Bundles with esbuild.       |
 | `packages/tsconfig` | Private shared TypeScript base. Never published.                |
 | `examples/basic`    | Runnable example and golden-image regression suite.             |
 | `examples/nextjs`   | Next.js app serving cached renders over HTTP.                   |
 
-Dependencies run one way only: `cli` to `react` to `sources` to `core`.
+Dependencies run one way only. `cli` and `styles` both sit on top of
+`react`, which sits on `sources`, which sits on `core`. Nothing below ever
+imports something above it, and `cli` and `styles` never import each other.
 
 ## Commands
 

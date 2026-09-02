@@ -72,7 +72,9 @@ an image with the attribution missing. Fonts are passed as file paths; see
 
 Nothing is styled by default. A layer you do not declare is not drawn, and a
 layer you declare without a colour paints black, so the palette above is doing
-real work rather than decorating.
+real work rather than decorating. `@stillmap/styles` ships three styles you can
+drop in and recolour later, if you would rather not pick every colour yourself;
+see [styles](./docs/styles.md).
 
 ## Why this exists
 
@@ -100,10 +102,12 @@ the caching that makes it affordable.
 | `@stillmap/core`    | Rendering engine. No React, no native dependency.    |
 | `@stillmap/sources` | Tile sources and schema adapters.                    |
 | `@stillmap/react`   | JSX declaration API and `renderMap()`.               |
+| `@stillmap/styles`  | Ready-made styles and their palettes.                |
 | `stillmap`          | CLI. `stillmap dev` previews templates in a browser. |
 
 ## Documentation
 
+- [Styles](./docs/styles.md)
 - [Fonts](./docs/fonts.md)
 - [Tile sources](./docs/tile-sources.md)
 - [Previewing maps](./docs/preview.md)

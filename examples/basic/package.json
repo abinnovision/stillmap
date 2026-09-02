@@ -31,6 +31,7 @@
 		"@stillmap/core": "workspace:^",
 		"@stillmap/react": "workspace:^",
 		"@stillmap/sources": "workspace:^",
+		"@stillmap/styles": "workspace:^",
 		"shiki": "^4.4.3"
 	},
 	"devDependencies": {

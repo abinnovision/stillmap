@@ -4,6 +4,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { Brussels } from "./brussels.tsx";
 import { Locator } from "./locator.tsx";
 import { Offices } from "./offices.tsx";
+import { PRESET_NAMES, PresetCard } from "./presets.tsx";
 
 import type { Office } from "./offices.tsx";
 import type { LngLat } from "@stillmap/core";
@@ -18,7 +19,7 @@ const OFFICES: readonly Office[] = [
 ];
 
 /**
- * Renders both examples against the live OpenFreeMap endpoint and writes them
+ * Renders every example against the live OpenFreeMap endpoint and writes them
  * to `out/`. The test suite renders the same components against committed
  * fixtures instead, so it never touches the network.
  *
@@ -37,28 +38,50 @@ export async function main(): Promise<void> {
 		scale: 2,
 	});
 	const brussels = await renderMap(<Brussels />, { format: "png", scale: 2 });
+	const presets = await Promise.all(
+		PRESET_NAMES.map(async (preset) => ({
+			preset,
+			result: await renderMap(
+				<PresetCard preset={preset} position={HAMBURG} />,
+				{ format: "png", scale: 2 },
+			),
+		})),
+	);
 	/* The map half of the repository header; see `assets/README.md`. */
 	const banner = await renderMap(
 		<Locator position={HAMBURG} width={660} height={420} />,
 		{ format: "png", scale: 2 },
 	);
 
-	await writeFile(new URL("locator.png", OUT), locator.png);
-	await writeFile(new URL("locator.svg", OUT), locator.svg);
-	await writeFile(new URL("offices.png", OUT), offices.png);
-	await writeFile(new URL("offices.svg", OUT), offices.svg);
-	await writeFile(new URL("brussels.png", OUT), brussels.png);
-	await writeFile(new URL("brussels.svg", OUT), brussels.svg);
-	await writeFile(new URL("banner.png", OUT), banner.png);
+	const files: readonly (readonly [string, Buffer | string])[] = [
+		["locator.png", locator.png],
+		["locator.svg", locator.svg],
+		["offices.png", offices.png],
+		["offices.svg", offices.svg],
+		["brussels.png", brussels.png],
+		["brussels.svg", brussels.svg],
+		["banner.png", banner.png],
+		...presets.flatMap(({ preset, result }) => [
+			[`preset-${preset}.png`, result.png] as const,
+			[`preset-${preset}.svg`, result.svg] as const,
+		]),
+	];
+
+	await Promise.all(
+		files.map(([name, data]) => writeFile(new URL(name, OUT), data)),
+	);
 
 	for (const warning of [
 		...locator.warnings,
 		...offices.warnings,
 		...brussels.warnings,
 		...banner.warnings,
+		...presets.flatMap(({ result }) => result.warnings),
 	]) {
 		process.stdout.write(`warning ${warning.code}: ${warning.message}\n`);
 	}
 
-	process.stdout.write(`wrote 7 files to ${OUT.pathname}\n`);
+	process.stdout.write(
+		`wrote ${String(files.length)} files to ${OUT.pathname}\n`,
+	);
 }
