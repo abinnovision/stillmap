@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/abinnovision/stillmap/compare/cli-v0.1.0...cli-v0.2.0) (2026-09-02)
+
+
+### Miscellaneous Chores
+
+* **cli:** Synchronize stillmap versions
+
 ## 0.1.0 (2026-09-01)
 
 
