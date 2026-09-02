@@ -8,6 +8,7 @@ export * from "./geometry.js";
 export * from "./labels.js";
 export * from "./layout.js";
 export * from "./mercator.js";
+export * from "./palette.js";
 export * from "./png.js";
 export * from "./render.js";
 export * from "./source.js";
