@@ -1,0 +1,7 @@
+{
+	"name": "stillmap",
+	"image": "mcr.microsoft.com/devcontainers/javascript-node:24",
+	"containerEnv": {
+		"COREPACK_ENABLE_DOWNLOAD_PROMPT": "0"
+	}
+}
