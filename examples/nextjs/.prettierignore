@@ -1,0 +1,4 @@
+.cache
+.next
+coverage
+next-env.d.ts

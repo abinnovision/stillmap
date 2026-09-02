@@ -7,6 +7,9 @@ out/
 .turbo/
 *.tsbuildinfo
 examples/*/out/
+examples/*/.next/
+examples/*/.cache/
+examples/*/next-env.d.ts
 
 # Test coverage
 coverage/

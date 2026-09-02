@@ -90,7 +90,8 @@ a footer.
 
 stillmap renders in plain Node. Call it per request behind your own domain, or
 call it once in a build step and keep the image for reuse. Either way the
-browser only ever talks to you.
+browser only ever talks to you. `examples/nextjs` is the per-request shape, with
+the caching that makes it affordable.
 
 ## Packages
 
