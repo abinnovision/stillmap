@@ -1,0 +1,38 @@
+{
+	"$schema": "https://codesandbox.io/schemas/tasks.json",
+	"setupTasks": [
+		{
+			"name": "Enable corepack",
+			"command": "corepack enable"
+		},
+		{
+			"name": "Install dependencies",
+			"command": "yarn install"
+		},
+		{
+			"name": "Build packages",
+			"command": "yarn build"
+		}
+	],
+	"tasks": {
+		"dev": {
+			"name": "Store finder (Next.js)",
+			"command": "yarn workspace @stillmap-examples/nextjs dev",
+			"runAtStart": true,
+			"preview": {
+				"port": 3000
+			}
+		},
+		"preview": {
+			"name": "Map previewer",
+			"command": "yarn workspace @stillmap-examples/basic dev --port 3001",
+			"preview": {
+				"port": 3001
+			}
+		},
+		"gallery": {
+			"name": "Build the gallery",
+			"command": "yarn workspace @stillmap-examples/basic gallery"
+		}
+	}
+}

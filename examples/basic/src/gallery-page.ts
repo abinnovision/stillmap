@@ -16,7 +16,7 @@ export interface GallerySection {
 	/** Pre-highlighted markup from shiki. */
 	readonly code: string;
 	readonly sourcePath: string;
-	readonly sandboxUrl: string | undefined;
+	readonly sandboxUrl: string;
 }
 
 const STYLE = `
@@ -111,11 +111,6 @@ const STYLE = `
 const REPO = "https://github.com/abinnovision/stillmap";
 
 function section(entry: GallerySection): string {
-	const sandbox =
-		entry.sandboxUrl === undefined
-			? ""
-			: `\n\t\t\t\t\t\t\t<a href="${escapeXml(entry.sandboxUrl)}">Edit this map</a>`;
-
 	return `			<section class="example" id="${escapeXml(entry.id)}">
 				<h2>${escapeXml(entry.title)}</h2>
 				<p class="blurb">${escapeXml(entry.blurb)}</p>
@@ -132,7 +127,8 @@ function section(entry: GallerySection): string {
 						<span class="meta">
 							<a href="${REPO}/blob/main/examples/basic/${escapeXml(entry.sourcePath)}"
 								>${escapeXml(entry.sourcePath)}</a
-							>${sandbox}
+							>
+							<a href="${escapeXml(entry.sandboxUrl)}">Edit this map</a>
 						</span>
 					</figcaption>
 				</figure>
@@ -166,7 +162,7 @@ export function page(
 				</p>
 				<p class="links">
 					<a class="button primary" href="${escapeXml(sandboxUrl)}"
-						>Open the playground</a
+						>Run it in CodeSandbox</a
 					>
 					<a class="button" href="${REPO}">Source</a>
 					<a class="button" href="https://www.npmjs.com/package/@stillmap/react"

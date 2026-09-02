@@ -18,7 +18,6 @@ below are the parts that must hold regardless.
 | `packages/tsconfig` | Private shared TypeScript base. Never published.                |
 | `examples/basic`    | Runnable example and golden-image regression suite.             |
 | `examples/nextjs`   | Next.js app serving cached renders over HTTP.                   |
-| `demo/`             | Standalone playground. npm, published packages, outside Yarn.   |
 
 Dependencies run one way only: `cli` to `react` to `sources` to `core`.
 

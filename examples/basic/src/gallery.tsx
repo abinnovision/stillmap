@@ -15,8 +15,7 @@ import type { ReactElement } from "react";
 const OUT = new URL("../out/site/", import.meta.url);
 const ROOT = new URL("../", import.meta.url);
 
-const SANDBOX =
-	"https://codesandbox.io/p/devbox/github/abinnovision/stillmap/tree/main/demo";
+const SANDBOX = "https://codesandbox.io/p/devbox/github/abinnovision/stillmap";
 
 const HAMBURG: LngLat = [9.9937, 53.5511];
 const OFFICES: readonly Office[] = [
@@ -32,8 +31,6 @@ interface Entry {
 	readonly element: ReactElement;
 	/** The component that produced the image, relative to the package root. */
 	readonly source: string;
-	/** The matching template in `demo/`, where one exists. */
-	readonly sandboxFile: string | undefined;
 }
 
 const ENTRIES: readonly Entry[] = [
@@ -46,7 +43,6 @@ const ENTRIES: readonly Entry[] = [
 			"the labels collide.",
 		element: <Locator position={HAMBURG} />,
 		source: "src/locator.tsx",
-		sandboxFile: "/maps/locator.tsx",
 	},
 	{
 		id: "offices",
@@ -57,7 +53,6 @@ const ENTRIES: readonly Entry[] = [
 			"dropped with a warning rather than silently.",
 		element: <Offices offices={OFFICES} />,
 		source: "src/offices.tsx",
-		sandboxFile: "/maps/offices.tsx",
 	},
 	{
 		id: "brussels",
@@ -68,7 +63,6 @@ const ENTRIES: readonly Entry[] = [
 			"component, so there is no style-packaging API because none is needed.",
 		element: <Brussels />,
 		source: "src/brussels.tsx",
-		sandboxFile: undefined,
 	},
 ];
 
@@ -120,10 +114,7 @@ async function main(): Promise<void> {
 			// eslint-disable-next-line no-await-in-loop
 			code: await highlight(entry.source),
 			sourcePath: entry.source,
-			sandboxUrl:
-				entry.sandboxFile === undefined
-					? undefined
-					: `${SANDBOX}?file=${entry.sandboxFile}`,
+			sandboxUrl: `${SANDBOX}?file=/examples/basic/${entry.source}`,
 		});
 
 		process.stdout.write(

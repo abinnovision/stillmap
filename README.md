@@ -10,8 +10,8 @@ canvas, no native map library, and no API key.
 
 [See what it renders](https://abinnovision.github.io/stillmap/): every example
 beside the JSX that produced it. Or
-[open the playground](https://codesandbox.io/p/devbox/github/abinnovision/stillmap/tree/main/demo)
-and change one.
+[open it in CodeSandbox](https://codesandbox.io/p/devbox/github/abinnovision/stillmap)
+to run the Next.js store finder against live tiles.
 
 ## Getting started
 
