@@ -1,0 +1,56 @@
+name: Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# One deployment at a time. A queued run supersedes a waiting one, but never
+# cancels a deploy already in flight.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build gallery
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - run: corepack enable
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .tool-versions
+          cache: yarn
+
+      - run: yarn install --immutable
+
+      - run: yarn build
+
+      # Renders against the live OpenFreeMap endpoint. If that is unreachable
+      # this step fails and the previous deployment stays up.
+      - run: yarn workspace @stillmap-examples/basic run gallery
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: examples/basic/out/site
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v5

@@ -8,6 +8,11 @@
 Describe a map as JSX, get back an SVG string or a PNG buffer. No browser, no
 canvas, no native map library, and no API key.
 
+[See what it renders](https://abinnovision.github.io/stillmap/): every example
+beside the JSX that produced it. Or
+[open the playground](https://codesandbox.io/p/devbox/github/abinnovision/stillmap/tree/main/demo)
+and change one.
+
 ## Getting started
 
 ```sh
