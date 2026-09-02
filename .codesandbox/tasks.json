@@ -3,11 +3,11 @@
 	"setupTasks": [
 		{
 			"name": "Enable corepack",
-			"command": "corepack enable"
+			"command": "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack enable && COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack install"
 		},
 		{
 			"name": "Install dependencies",
-			"command": "yarn install"
+			"command": "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 yarn install"
 		},
 		{
 			"name": "Build packages",
