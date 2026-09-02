@@ -6,7 +6,7 @@
 	"bump-minor-pre-major": true,
 	"bump-patch-for-minor-pre-major": true,
 	"separate-pull-requests": false,
-	"group-pull-request-title-pattern": "chore: release stillmap ${version}",
+	"group-pull-request-title-pattern": "chore: release stillmap",
 	"plugins": [
 		{
 			"type": "linked-versions",
