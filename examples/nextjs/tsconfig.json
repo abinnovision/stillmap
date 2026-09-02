@@ -1,0 +1,14 @@
+{
+	"extends": ["@internal/tsconfig/tsconfig.base.json"],
+	"compilerOptions": {
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"jsx": "preserve",
+		"allowJs": true,
+		"incremental": true,
+		"plugins": [{ "name": "next" }],
+		"paths": { "@/*": ["./src/*"] }
+	},
+	"include": ["next-env.d.ts", "app/**/*", "src/**/*", "test/**/*", "*.ts"],
+	"exclude": ["node_modules", ".next"]
+}

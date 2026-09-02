@@ -1,0 +1,50 @@
+{
+	"$schema": "https://json.schemastore.org/package.json",
+	"name": "@stillmap-examples/nextjs",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Serving stillmap renders from a Next.js app, with output caching.",
+	"license": "Apache-2.0",
+	"type": "module",
+	"scripts": {
+		"build:next": "NEXT_TELEMETRY_DISABLED=1 next build",
+		"dev": "next dev",
+		"format:check": "prettier --check '{{app,src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml,css}'",
+		"format:fix": "prettier --write '{{app,src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml,css}'",
+		"lint:check": "eslint '{{app,src,test}/**/*,*}.{t,j}s{,x}'",
+		"lint:fix": "eslint '{{app,src,test}/**/*,*}.{t,j}s{,x}' --fix",
+		"start": "next start",
+		"test-unit": "vitest --run --config vitest.config.ts --project='*#unit'",
+		"test-unit:watch": "vitest --config vitest.config.ts --project='*#unit'",
+		"typecheck": "tsc -p tsconfig.json"
+	},
+	"lint-staged": {
+		"{{app,src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml,css}": "prettier --write",
+		"{{app,src,test}/**/*,*}.{t,j}s{,x}": "eslint --fix"
+	},
+	"prettier": "@abinnovision/prettier-config",
+	"dependencies": {
+		"@stillmap/core": "workspace:^",
+		"@stillmap/react": "workspace:^",
+		"@stillmap/sources": "workspace:^",
+		"next": "^16.3.0",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0"
+	},
+	"devDependencies": {
+		"@abinnovision/eslint-config-base": "^3.4.2",
+		"@abinnovision/prettier-config": "^2.2.0",
+		"@internal/tsconfig": "workspace:*",
+		"@resvg/resvg-js": "^2.6.2",
+		"@types/node": "^26.4.0",
+		"@types/react": "^19.2.17",
+		"@types/react-dom": "^19.2.3",
+		"eslint": "^10.7.0",
+		"prettier": "^3.9.5",
+		"typescript": "^6.0.3",
+		"vitest": "^4.1.10"
+	},
+	"engines": {
+		"node": ">=22"
+	}
+}
