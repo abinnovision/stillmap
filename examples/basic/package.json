@@ -48,7 +48,7 @@
 		"react-dom": "^19.2.0",
 		"stillmap": "workspace:^",
 		"tsx": "^4.20.6",
-		"typescript": "^6.0.3",
+		"typescript": "^7.0.2",
 		"vitest": "^4.1.10"
 	}
 }
