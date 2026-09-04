@@ -8,6 +8,10 @@
 Describe a map as JSX, get back an SVG string or a PNG buffer. No browser, no
 canvas, no native map library, and no API key.
 
+If people pan and zoom it, use MapLibre GL JS. If the map is a picture that
+happens to be a map, use stillmap: store locators, order confirmations, report
+headers, social cards, invoices, printed pages.
+
 [Open it in CodeSandbox](https://codesandbox.io/p/devbox/github/abinnovision/stillmap)
 to run the Next.js store finder against live tiles, without a checkout.
 
@@ -77,21 +81,45 @@ see [styles](./docs/styles.md).
 ## Why this exists
 
 Putting a static map on a page usually means pointing an `<img>` at a provider's
-CDN. Every visitor then makes a request to that provider, which in some
-countries turns a piece of decoration into a consent question, and which ties
-the page to an API key and to a bill that grows with your traffic rather than
-with the number of maps you actually have.
+CDN. That is one line of HTML, and it quietly buys four things you may not want.
+
+**A third party in front of your page.** Every visitor makes a request to that
+provider, carrying their IP address, before they have agreed to anything. In
+some countries that turns a map in a footer into a consent question, and a piece
+of decoration into a compliance artifact with an owner and a review cycle.
+
+**A bill that tracks your traffic.** Static image APIs charge per request, so a
+store finder with 200 locations is 200 pictures you pay for once per visitor,
+forever. How many maps you have is a number you control. How many people look at
+them is not.
+
+**An API key.** A signup, a secret per environment, a rate limit to design
+around, and terms someone else can change under a page you already shipped.
+
+**A rasteriser.** You get a PNG. A map inside a PDF at print resolution, a map
+in a transactional email, a map that recolours with the page's dark mode instead
+of being a second render: none of those start from a PNG.
 
 The data stopped being the obstacle a long time ago. OpenStreetMap is free to
 use commercially, and several providers serve vector tiles built from it. What
 was left was the rendering, and doing that yourself meant driving a headless
-browser or binding a native map library. That is a lot of machinery for a map in
-a footer.
+browser or binding a native map library. Both are a lot of machinery for a map
+in a footer, and neither one installs on Vercel, Cloudflare Workers, or a plain
+Lambda.
 
-stillmap renders in plain Node. Call it per request behind your own domain, or
-call it once in a build step and keep the image for reuse. Either way the
-browser only ever talks to you. `examples/nextjs` is the per-request shape, with
-the caching that makes it affordable.
+stillmap renders in plain Node, wherever your code already runs. Call it per
+request behind your own domain, or call it once in a build step and keep the
+image for reuse. Either way the browser only ever talks to you.
+`examples/nextjs` is the per-request shape, with the caching that makes it
+affordable.
+
+## Where it does not belong
+
+- **Anything interactive.** No panning, no zooming, no click targets. Reach for
+  [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/), which is excellent.
+- **Terrain, 3D, hillshade, sprite-heavy cartography.** Out of scope.
+- **Maps as the product.** If the map is what people came for rather than a
+  component of the page, you want the full engine.
 
 ## Packages
 
