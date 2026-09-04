@@ -2,11 +2,13 @@
  * opentype.js 2.0 ships no type declarations. This declares the sliver the
  * metrics module uses, nothing more, so the ambient surface stays deterministic.
  *
- * `parse` is declared as a named export because the package's ESM build has no
- * default export; importing the default resolves only under Node's CommonJS
- * interop and breaks under any bundler that prefers the `module` entry.
+ * The ESM build is named directly because the package entry cannot be imported
+ * the same way twice: it points `main` at a UMD file, whose IIFE wrapper hides
+ * the named exports from Node's CommonJS detection, and `module` at this file,
+ * which has the named exports and no default. Naming the file gives every
+ * resolver the same module.
  */
-declare module "opentype.js" {
+declare module "opentype.js/dist/opentype.mjs" {
 	interface OpentypeGlyph {
 		readonly advanceWidth?: number;
 		readonly unicode?: number;

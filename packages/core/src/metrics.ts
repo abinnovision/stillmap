@@ -1,9 +1,9 @@
 import { readFile, stat } from "node:fs/promises";
-import { parse } from "opentype.js";
+import { parse } from "opentype.js/dist/opentype.mjs";
 
 import type { FontFace } from "./fonts.js";
 import type { WarningCollector } from "./warnings.js";
-import type { OpentypeFont } from "opentype.js";
+import type { OpentypeFont } from "opentype.js/dist/opentype.mjs";
 
 export interface TextStyle {
 	readonly fontFamily: string;
