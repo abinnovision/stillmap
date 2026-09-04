@@ -1,9 +1,9 @@
 import { readFile, stat } from "node:fs/promises";
-import opentype from "opentype.js";
+import { parse } from "opentype.js/dist/opentype.mjs";
 
 import type { FontFace } from "./fonts.js";
 import type { WarningCollector } from "./warnings.js";
-import type { OpentypeFont } from "opentype.js";
+import type { OpentypeFont } from "opentype.js/dist/opentype.mjs";
 
 export interface TextStyle {
 	readonly fontFamily: string;
@@ -76,7 +76,7 @@ async function parseFont(file: string): Promise<OpentypeFont | null> {
 	try {
 		const buffer = await readFile(file);
 
-		font = opentype.parse(
+		font = parse(
 			buffer.buffer.slice(
 				buffer.byteOffset,
 				buffer.byteOffset + buffer.byteLength,
