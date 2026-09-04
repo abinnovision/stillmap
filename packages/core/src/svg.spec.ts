@@ -111,6 +111,8 @@ describe("serializeScene", () => {
 						maxCount: 10,
 						element: 0,
 						align: "middle",
+						lines: ["Hamburg"],
+						lineHeight: 18,
 						box: { minX: 0, minY: 0, maxX: 10, maxY: 10 },
 					},
 				],

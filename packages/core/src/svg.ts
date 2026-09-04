@@ -90,13 +90,30 @@ function renderLabel(label: PlacedLabel): string {
 			: ` stroke="${escapeXml(label.halo)}" stroke-width="${num(label.haloWidth)}"` +
 				` stroke-linejoin="round" paint-order="stroke"`;
 
+	/*
+	 * A wrapped label emits one tspan per line, each with its own x and y:
+	 * lines are centred vertically on the anchor and share its alignment.
+	 */
+	const content =
+		label.lines.length === 1
+			? escapeXml(label.text)
+			: label.lines
+					.map(
+						(line, index) =>
+							`<tspan x="${num(label.anchor.x)}" y="${num(
+								label.anchor.y +
+									(index - (label.lines.length - 1) / 2) * label.lineHeight,
+							)}">${escapeXml(line)}</tspan>`,
+					)
+					.join("");
+
 	return (
 		`<text x="${num(label.anchor.x)}" y="${num(label.anchor.y)}"` +
 		` text-anchor="${label.align}" dominant-baseline="central"` +
 		` font-family="${escapeXml(label.fontFamily)}"` +
 		` font-size="${num(label.fontSize)}" font-weight="${String(label.fontWeight)}"` +
 		` letter-spacing="${num(label.letterSpacing)}"` +
-		` fill="${escapeXml(label.color)}"${halo}>${escapeXml(label.text)}</text>`
+		` fill="${escapeXml(label.color)}"${halo}>${content}</text>`
 	);
 }
 

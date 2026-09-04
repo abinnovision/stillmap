@@ -72,6 +72,12 @@ export interface LabelDeclaration {
 	 * shrinks.
 	 */
 	readonly shrink?: number;
+	/**
+	 * Widest a label may run before wrapping onto further lines, in ems.
+	 * Defaults to 10, MapLibre's `text-max-width`. Lines aim for even length,
+	 * and a single unbreakable word may still exceed the limit.
+	 */
+	readonly maxWidth?: Zoomable<number>;
 }
 
 export interface MarkerDeclaration {
@@ -83,9 +89,9 @@ export interface MarkerDeclaration {
 	readonly padding?: number;
 	/**
 	 * Whether the marker claims its box against label collision. Defaults to
-	 * false, so labels place as though the marker were not there and it may
-	 * cover them. Set it true to keep the box clear and lose the labels that
-	 * would have fallen under the marker.
+	 * true: a label under the marker relocates to a nearby position rather
+	 * than being covered. Set it false to place labels as though the marker
+	 * were not there, letting it draw over them.
 	 */
 	readonly reserve?: boolean;
 	/** Pre-rendered SVG markup for the marker's children. */

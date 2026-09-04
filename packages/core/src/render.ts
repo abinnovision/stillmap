@@ -284,7 +284,7 @@ function projectMarkers(args: ProjectMarkersArgs): ProjectedMarkers {
 			continue;
 		}
 
-		if (marker.reserve === true) {
+		if (marker.reserve !== false) {
 			reserved.push({
 				minX: origin.x - pad,
 				minY: origin.y - pad,

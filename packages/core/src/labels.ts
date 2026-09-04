@@ -2,6 +2,7 @@ import { anneal } from "./anneal.js";
 import { GridIndex } from "./collision.js";
 import { canvas } from "./geometry.js";
 import { estimateMeasurer } from "./metrics.js";
+import { wrapText } from "./wrap.js";
 
 import type { Color } from "./filter.js";
 import type { CanvasPoint } from "./geometry.js";
@@ -35,6 +36,11 @@ export interface LabelCandidate {
 	 * Unset means the label never shrinks.
 	 */
 	readonly shrink?: number;
+	/**
+	 * Widest a label may run before wrapping onto further lines, in ems.
+	 * Defaults to 10. A single unbreakable word may still exceed it.
+	 */
+	readonly maxWidth?: number;
 	/** Budget shared by every candidate declared by the same element. */
 	readonly maxCount: number;
 	/** Index of the declaring element. Scopes `maxCount`. */
@@ -48,6 +54,10 @@ export interface PlacedLabel extends LabelCandidate {
 	/** Point the text is drawn at. `align` names the edge it grows from. */
 	readonly anchor: CanvasPoint;
 	readonly align: LabelAlign;
+	/** The text broken into lines, centred on the anchor. */
+	readonly lines: readonly string[];
+	/** Vertical distance between line centres. */
+	readonly lineHeight: number;
 }
 
 /** Breathing room around a label box so text never quite touches. */
@@ -62,6 +72,9 @@ const SHRINK_PENALTY = 0.5;
 
 /** A label smaller than this is noise, not information. */
 const MIN_LEGIBLE_FONT_SIZE = 8;
+
+/** MapLibre's `text-max-width` default, in ems. */
+const DEFAULT_MAX_WIDTH_EM = 10;
 
 export function boxesOverlap(a: Box, b: Box): boolean {
 	return !(
@@ -78,6 +91,8 @@ export interface LabelPosition {
 	readonly anchor: CanvasPoint;
 	readonly align: LabelAlign;
 	readonly fontSize: number;
+	readonly lines: readonly string[];
+	readonly lineHeight: number;
 	/** 0.0 is ideal, 1.0 borderline, above that objectionable. */
 	readonly penalty: number;
 }
@@ -123,15 +138,22 @@ function positionsAtSize(
 	basePenalty: number,
 ): LabelPosition[] {
 	const { candidate, measure, width, height } = args;
-	const measured = measure(candidate.text, {
+	const style = {
 		fontFamily: candidate.fontFamily,
 		fontWeight: candidate.fontWeight,
 		fontSize,
 		letterSpacing: candidate.letterSpacing,
+	};
+	const lines = wrapText(candidate.text, {
+		style,
+		measure,
+		maxWidth: (candidate.maxWidth ?? DEFAULT_MAX_WIDTH_EM) * fontSize,
 	});
+	const measured = lines.map((line) => measure(line, style));
+	const lineHeight = Math.max(...measured.map((m) => m.ascent + m.descent));
 	const pad = LABEL_PADDING + candidate.haloWidth / 2;
-	const halfW = measured.width / 2 + pad;
-	const halfH = (measured.ascent + measured.descent) / 2 + pad;
+	const halfW = Math.max(...measured.map((m) => m.width)) / 2 + pad;
+	const halfH = (lineHeight * lines.length) / 2 + pad;
 	const gap = Math.max(2, fontSize * 0.15);
 	const positions: LabelPosition[] = [];
 
@@ -171,6 +193,8 @@ function positionsAtSize(
 			anchor: canvas(anchorX, cy),
 			align,
 			fontSize,
+			lines,
+			lineHeight,
 			penalty: basePenalty + offset.penalty,
 		});
 	}
@@ -382,6 +406,8 @@ export function placeLabels(args: PlaceLabelsArgs): readonly PlacedLabel[] {
 			anchor: position.anchor,
 			align: position.align,
 			fontSize: position.fontSize,
+			lines: position.lines,
+			lineHeight: position.lineHeight,
 			box: position.box,
 		});
 	}

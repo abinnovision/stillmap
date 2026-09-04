@@ -37,6 +37,11 @@ export interface PlaceLabelsProps {
 	 * Unset never shrinks.
 	 */
 	readonly shrink?: number;
+	/**
+	 * Widest a label may run before wrapping onto further lines, in ems.
+	 * Defaults to 10.
+	 */
+	readonly maxWidth?: Zoomable<number>;
 }
 
 const OPTIONAL = [
@@ -53,6 +58,7 @@ const OPTIONAL = [
 	"maxRank",
 	"priority",
 	"shrink",
+	"maxWidth",
 ] as const;
 
 /**
