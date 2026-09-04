@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { canvas } from "./geometry.js";
-import { estimateTextWidth, placeLabels } from "./labels.js";
+import { boxesOverlap, placeLabels } from "./labels.js";
 import { createWarningCollector } from "./warnings.js";
 
 import type { LabelCandidate } from "./labels.js";
@@ -24,23 +24,6 @@ function candidate(overrides: Partial<LabelCandidate> = {}): LabelCandidate {
 	};
 }
 
-describe("estimateTextWidth", () => {
-	it("scales with character count and font size", () => {
-		const short = estimateTextWidth("Ulm", 15, 0);
-		const long = estimateTextWidth("Hamburg", 15, 0);
-
-		expect(long).toBeGreaterThan(short);
-		expect(estimateTextWidth("Ulm", 30, 0)).toBeCloseTo(short * 2, 6);
-	});
-
-	it("adds letter spacing per character", () => {
-		expect(estimateTextWidth("abc", 10, 1)).toBeCloseTo(
-			estimateTextWidth("abc", 10, 0) + 3,
-			6,
-		);
-	});
-});
-
 describe("placeLabels", () => {
 	it("places a lone label", () => {
 		const placed = placeLabels({
@@ -55,7 +38,7 @@ describe("placeLabels", () => {
 		expect(placed[0]?.text).toBe("Hamburg");
 	});
 
-	it("drops a label colliding with a higher-priority one", () => {
+	it("relocates a colliding label to a free position instead of dropping it", () => {
 		const warn = createWarningCollector({});
 		const placed = placeLabels({
 			candidates: [
@@ -68,8 +51,15 @@ describe("placeLabels", () => {
 			warn,
 		});
 
-		expect(placed.map((p) => p.text)).toEqual(["First"]);
-		expect(warn.warnings.map((w) => w.code)).toEqual(["LABEL_DROPPED"]);
+		expect(placed.map((p) => p.text)).toEqual(["First", "Second"]);
+
+		const [first, second] = placed as [
+			(typeof placed)[number],
+			(typeof placed)[number],
+		];
+
+		expect(boxesOverlap(first.box, second.box)).toBe(false);
+		expect(warn.warnings).toEqual([]);
 	});
 
 	it("sorts by priority then rank before placing", () => {
@@ -192,5 +182,93 @@ describe("placeLabels", () => {
 		});
 
 		expect(placed.map((p) => p.text)).toEqual(["A1", "A2", "B1", "B2"]);
+	});
+	it("places the same scene identically on every run", () => {
+		const crowd = Array.from({ length: 40 }, (_, i) =>
+			candidate({
+				text: `Place ${String(i)}`,
+				anchor: canvas(40 + (i % 8) * 45, 40 + Math.floor(i / 8) * 50),
+				rank: i,
+			}),
+		);
+		const place = (): readonly string[] =>
+			placeLabels({
+				candidates: crowd,
+				reserved: [],
+				width: 400,
+				height: 300,
+				warn: createWarningCollector({}),
+			}).map((p) => `${p.text}@${String(p.box.minX)},${String(p.box.minY)}`);
+
+		expect(place()).toEqual(place());
+	});
+
+	it("never places two overlapping boxes, however crowded", () => {
+		const crowd = Array.from({ length: 60 }, (_, i) =>
+			candidate({
+				text: "Dense",
+				anchor: canvas(180 + (i % 10) * 5, 140 + Math.floor(i / 10) * 5),
+				rank: i,
+				maxCount: 60,
+			}),
+		);
+		const placed = placeLabels({
+			candidates: crowd,
+			reserved: [],
+			width: 400,
+			height: 300,
+			warn: createWarningCollector({}),
+		});
+
+		for (const [i, a] of placed.entries()) {
+			for (const b of placed.slice(i + 1)) {
+				expect(boxesOverlap(a.box, b.box)).toBe(false);
+			}
+		}
+	});
+
+	it("shrinks a label that only fits the canvas at a smaller size", () => {
+		/*
+		 * "Wilhelmsburg" at 15px measures wider than a 108px canvas, so every
+		 * full-size position is rejected; at 85% it fits, so the shrunk
+		 * variants are the label's only way onto the map.
+		 */
+		const place = (shrink?: number): ReturnType<typeof placeLabels> =>
+			placeLabels({
+				candidates: [
+					candidate({
+						text: "Wilhelmsburg",
+						anchor: canvas(54, 150),
+						...(shrink === undefined ? {} : { shrink }),
+					}),
+				],
+				reserved: [],
+				width: 108,
+				height: 300,
+				warn: createWarningCollector({}),
+			});
+
+		expect(place()).toEqual([]);
+
+		const placed = place(0.85);
+
+		expect(placed.map((p) => p.fontSize)).toEqual([15 * 0.85]);
+	});
+
+	it("keeps the greedy result when annealing is disabled", () => {
+		const crowd = [
+			candidate({ text: "One", anchor: canvas(100, 100) }),
+			candidate({ text: "Two", anchor: canvas(120, 100), rank: 2 }),
+		];
+		const placed = placeLabels({
+			candidates: crowd,
+			reserved: [],
+			width: 400,
+			height: 300,
+			annealingStages: 0,
+			warn: createWarningCollector({}),
+		});
+
+		expect(placed.map((p) => p.text)).toEqual(["One", "Two"]);
 	});
 });

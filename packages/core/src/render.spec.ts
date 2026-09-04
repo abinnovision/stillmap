@@ -149,7 +149,7 @@ describe("renderScene", () => {
 		markup: '<circle r="1" />',
 	};
 
-	it("keeps labels under a marker unless it asks to reserve", async () => {
+	it("reserves a marker's box unless it opts out", async () => {
 		const shared = {
 			...base,
 			fonts: [{ family: "Inter", file: fontFile }],
@@ -158,14 +158,15 @@ describe("renderScene", () => {
 			],
 		};
 
-		const overlaid = await renderScene({ ...shared, markers: [covering] });
-		const reserved = await renderScene({
+		const reserved = await renderScene({ ...shared, markers: [covering] });
+		const overlaid = await renderScene({
 			...shared,
-			markers: [{ ...covering, reserve: true }],
+			markers: [{ ...covering, reserve: false }],
 		});
 
-		expect(countLabels(overlaid.svg)).toBeGreaterThan(0);
+		// The marker covers the whole canvas, so reserving leaves no room.
 		expect(countLabels(reserved.svg)).toBe(0);
+		expect(countLabels(overlaid.svg)).toBeGreaterThan(0);
 	});
 
 	it("embeds declared fonts only when asked", async () => {

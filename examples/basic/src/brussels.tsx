@@ -20,11 +20,9 @@ export interface BrusselsProps {
  * A second city in the `Light` style, at a wider crop than the locator, where
  * the inverted contrast has room to read.
  *
- * The pin sits on the same point as the "Brussels" place label. A marker claims
- * its box against label collision by default, which would drop that label, so
- * this one opts out with `reserve={false}` and draws over the labels instead.
- * stillmap has no label displacement, so the choice is between losing the label
- * and overlapping it.
+ * The pin sits on the same point as the "Brussels" place label. The marker
+ * reserves its box by default, so the label relocates to a position beside
+ * the pin instead of being covered by it.
  */
 export const Brussels = ({
 	source = openFreeMap(),
@@ -45,12 +43,7 @@ export const Brussels = ({
 
 		<Light />
 
-		<Pin
-			position={BRUSSELS}
-			fill={LIGHT.chrome.marker}
-			size={[22, 29]}
-			reserve={false}
-		/>
+		<Pin position={BRUSSELS} fill={LIGHT.chrome.marker} size={[22, 29]} />
 		<Attribution placement="bottom-right" />
 	</Map>
 );

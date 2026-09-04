@@ -1,7 +1,12 @@
+import { anneal } from "./anneal.js";
+import { GridIndex } from "./collision.js";
 import { canvas } from "./geometry.js";
+import { estimateMeasurer } from "./metrics.js";
+import { wrapText } from "./wrap.js";
 
 import type { Color } from "./filter.js";
 import type { CanvasPoint } from "./geometry.js";
+import type { TextMeasurer } from "./metrics.js";
 import type { WarningCollector } from "./warnings.js";
 
 /** An axis-aligned rectangle in canvas space. */
@@ -26,36 +31,50 @@ export interface LabelCandidate {
 	readonly color: Color;
 	readonly halo?: Color;
 	readonly haloWidth: number;
+	/**
+	 * Smallest scale the label may shrink to when space is tight, in (0, 1).
+	 * Unset means the label never shrinks.
+	 */
+	readonly shrink?: number;
+	/**
+	 * Widest a label may run before wrapping onto further lines, in ems.
+	 * Defaults to 10. A single unbreakable word may still exceed it.
+	 */
+	readonly maxWidth?: number;
 	/** Budget shared by every candidate declared by the same element. */
 	readonly maxCount: number;
 	/** Index of the declaring element. Scopes `maxCount`. */
 	readonly element: number;
 }
 
+export type LabelAlign = "start" | "middle" | "end";
+
 export interface PlacedLabel extends LabelCandidate {
 	readonly box: Box;
+	/** Point the text is drawn at. `align` names the edge it grows from. */
+	readonly anchor: CanvasPoint;
+	readonly align: LabelAlign;
+	/** The text broken into lines, centred on the anchor. */
+	readonly lines: readonly string[];
+	/** Vertical distance between line centres. */
+	readonly lineHeight: number;
 }
-
-/**
- * Mean glyph advance as a fraction of the em, measured across the Latin subset.
- *
- * This is an estimate, not a metric. The real label engine reads the font;
- * until then a label may be placed slightly tighter or looser than it draws.
- * This is the quality ceiling the design document names as the project's
- * biggest risk.
- */
-const MEAN_ADVANCE_EM = 0.55;
 
 /** Breathing room around a label box so text never quite touches. */
 const LABEL_PADDING = 2;
 
-export function estimateTextWidth(
-	text: string,
-	fontSize: number,
-	letterSpacing: number,
-): number {
-	return text.length * (fontSize * MEAN_ADVANCE_EM + letterSpacing);
-}
+/**
+ * Cost of the shrunk variant of a position, on the same scale as position
+ * penalties: roughly as objectionable as the worst full-size position, so the
+ * search shrinks only when every full-size position is contested.
+ */
+const SHRINK_PENALTY = 0.5;
+
+/** A label smaller than this is noise, not information. */
+const MIN_LEGIBLE_FONT_SIZE = 8;
+
+/** MapLibre's `text-max-width` default, in ems. */
+const DEFAULT_MAX_WIDTH_EM = 10;
 
 export function boxesOverlap(a: Box, b: Box): boolean {
 	return !(
@@ -66,49 +85,142 @@ export function boxesOverlap(a: Box, b: Box): boolean {
 	);
 }
 
-function boxFor(candidate: LabelCandidate): Box {
-	const width = estimateTextWidth(
-		candidate.text,
-		candidate.fontSize,
-		candidate.letterSpacing,
-	);
-	const height = candidate.fontSize;
-
-	return {
-		minX: candidate.anchor.x - width / 2 - LABEL_PADDING,
-		maxX: candidate.anchor.x + width / 2 + LABEL_PADDING,
-		minY: candidate.anchor.y - height / 2 - LABEL_PADDING,
-		maxY: candidate.anchor.y + height / 2 + LABEL_PADDING,
-	};
+/** One way a label could sit on the canvas. */
+export interface LabelPosition {
+	readonly box: Box;
+	readonly anchor: CanvasPoint;
+	readonly align: LabelAlign;
+	readonly fontSize: number;
+	readonly lines: readonly string[];
+	readonly lineHeight: number;
+	/** 0.0 is ideal, 1.0 borderline, above that objectionable. */
+	readonly penalty: number;
 }
 
 /**
- * Slides a box back inside the canvas, or returns null when it is too large to
- * fit at all.
- *
- * A label whose anchor is comfortably on screen used to be discarded whole for
- * overhanging an edge by a few pixels, which cost around one label in six on a
- * 1200x600 render. Only the box moves; the place it names does not, so callers
- * must carry the same shift onto the anchor the text is drawn at.
+ * Relative placements around the feature point, most preferred first. A place
+ * label has no drawn symbol, so sitting centred on the point is ideal and the
+ * displaced positions exist to absorb collisions, at a growing cost. The set
+ * deliberately includes mediocre positions: a varied candidate set is what
+ * makes a good global labeling findable at all.
  */
-function fitInside(box: Box, width: number, height: number): Box | null {
-	if (box.maxX - box.minX > width || box.maxY - box.minY > height) {
-		return null;
-	}
+const OFFSETS: readonly {
+	/** Box centre offset in units of (gap + halfWidth, gap + halfHeight). */
+	readonly dx: -1 | 0 | 1;
+	readonly dy: -1 | 0 | 1;
+	/** Extra vertical shift in halves of the box height. */
+	readonly lift: number;
+	readonly penalty: number;
+}[] = [
+	{ dx: 0, dy: 0, lift: 0, penalty: 0 },
+	{ dx: 0, dy: 0, lift: -1, penalty: 0.05 },
+	{ dx: 0, dy: 0, lift: 1, penalty: 0.08 },
+	{ dx: 1, dy: 0, lift: 0, penalty: 0.12 },
+	{ dx: -1, dy: 0, lift: 0, penalty: 0.18 },
+	{ dx: 0, dy: -1, lift: 0, penalty: 0.22 },
+	{ dx: 0, dy: 1, lift: 0, penalty: 0.26 },
+	{ dx: 1, dy: -1, lift: 0, penalty: 0.32 },
+	{ dx: -1, dy: -1, lift: 0, penalty: 0.38 },
+	{ dx: 1, dy: 1, lift: 0, penalty: 0.42 },
+	{ dx: -1, dy: 1, lift: 0, penalty: 0.48 },
+];
 
-	const dx = box.minX < 0 ? -box.minX : Math.min(0, width - box.maxX);
-	const dy = box.minY < 0 ? -box.minY : Math.min(0, height - box.maxY);
+interface PositionArgs {
+	readonly candidate: LabelCandidate;
+	readonly measure: TextMeasurer;
+	readonly width: number;
+	readonly height: number;
+}
 
-	if (dx === 0 && dy === 0) {
-		return box;
-	}
-
-	return {
-		minX: box.minX + dx,
-		maxX: box.maxX + dx,
-		minY: box.minY + dy,
-		maxY: box.maxY + dy,
+function positionsAtSize(
+	args: PositionArgs,
+	fontSize: number,
+	basePenalty: number,
+): LabelPosition[] {
+	const { candidate, measure, width, height } = args;
+	const style = {
+		fontFamily: candidate.fontFamily,
+		fontWeight: candidate.fontWeight,
+		fontSize,
+		letterSpacing: candidate.letterSpacing,
 	};
+	const lines = wrapText(candidate.text, {
+		style,
+		measure,
+		maxWidth: (candidate.maxWidth ?? DEFAULT_MAX_WIDTH_EM) * fontSize,
+	});
+	const measured = lines.map((line) => measure(line, style));
+	const lineHeight = Math.max(...measured.map((m) => m.ascent + m.descent));
+	const pad = LABEL_PADDING + candidate.haloWidth / 2;
+	const halfW = Math.max(...measured.map((m) => m.width)) / 2 + pad;
+	const halfH = (lineHeight * lines.length) / 2 + pad;
+	const gap = Math.max(2, fontSize * 0.15);
+	const positions: LabelPosition[] = [];
+
+	for (const offset of OFFSETS) {
+		const cx = candidate.anchor.x + offset.dx * (gap + halfW);
+		const cy =
+			candidate.anchor.y + offset.dy * (gap + halfH) + offset.lift * halfH;
+		const box: Box = {
+			minX: cx - halfW,
+			maxX: cx + halfW,
+			minY: cy - halfH,
+			maxY: cy + halfH,
+		};
+
+		// A box the canvas cannot hold is not a position, just a wish.
+		if (box.minX < 0 || box.minY < 0 || box.maxX > width || box.maxY > height) {
+			continue;
+		}
+
+		/*
+		 * The drawn anchor sits on the side facing the feature, so the gap
+		 * between them is exact even when the rasteriser's shaping disagrees
+		 * with the measurement: the error accumulates on the far side, where
+		 * nothing collides.
+		 */
+		const align: LabelAlign =
+			offset.dx > 0 ? "start" : offset.dx < 0 ? "end" : "middle";
+		const anchorX =
+			align === "start"
+				? box.minX + pad
+				: align === "end"
+					? box.maxX - pad
+					: cx;
+
+		positions.push({
+			box,
+			anchor: canvas(anchorX, cy),
+			align,
+			fontSize,
+			lines,
+			lineHeight,
+			penalty: basePenalty + offset.penalty,
+		});
+	}
+
+	return positions;
+}
+
+function positionsFor(args: PositionArgs): LabelPosition[] {
+	const { candidate } = args;
+	const positions = positionsAtSize(args, candidate.fontSize, 0);
+
+	if (
+		candidate.shrink !== undefined &&
+		candidate.shrink < 1 &&
+		candidate.fontSize * candidate.shrink >= MIN_LEGIBLE_FONT_SIZE
+	) {
+		positions.push(
+			...positionsAtSize(
+				args,
+				candidate.fontSize * candidate.shrink,
+				SHRINK_PENALTY,
+			),
+		);
+	}
+
+	return positions.sort((a, b) => a.penalty - b.penalty);
 }
 
 export interface PlaceLabelsArgs {
@@ -117,22 +229,66 @@ export interface PlaceLabelsArgs {
 	readonly reserved: readonly Box[];
 	readonly width: number;
 	readonly height: number;
+	/** Real font metrics. Defaults to the estimate. */
+	readonly measure?: TextMeasurer;
+	/**
+	 * Annealing effort, in temperature stages. 0 skips the search and keeps
+	 * the greedy placement; the default of 50 is the published schedule.
+	 */
+	readonly annealingStages?: number;
 	readonly warn: WarningCollector;
 }
 
+interface Admitted {
+	readonly candidate: LabelCandidate;
+	readonly positions: readonly LabelPosition[];
+	readonly deletionCost: number;
+}
+
 /**
- * Greedy placement in priority then rank order. A candidate is placed when its
- * anchor is on the canvas and its box collides with nothing already placed. A
- * box overhanging an edge slides inside rather than losing the label. Each
- * declaring element spends its own `maxCount`.
+ * Cost of leaving a label off the map, on the position-penalty scale where a
+ * poor position costs about 0.5. Prominent labels resist deletion harder,
+ * which is what `priority` and `rank` mean, expressed as cost rather than
+ * ordering.
+ */
+function deletionCost(candidate: LabelCandidate): number {
+	return 4 + 2 / (1 + candidate.priority) + 4 / (1 + candidate.rank);
+}
+
+/**
+ * Tries the label's positions in penalty order and claims the first free one.
+ * Returns the claimed position index, or -1 when every position is taken.
+ */
+function claim(
+	uid: number,
+	positions: readonly LabelPosition[],
+	grid: GridIndex,
+): number {
+	for (const [index, position] of positions.entries()) {
+		if (!grid.hitTest(position.box)) {
+			grid.insert(uid, position.box);
+
+			return index;
+		}
+	}
+
+	return -1;
+}
+
+/**
+ * Places labels in three passes: a greedy seed in priority then rank order, a
+ * simulated-annealing refinement over every position at once, and a final
+ * enforcement pass that restores the hard guarantee that no two placed boxes
+ * overlap. Each declaring element admits at most `maxCount` labels into the
+ * search; the deterministic seed makes the whole render reproducible.
  */
 export function placeLabels(args: PlaceLabelsArgs): readonly PlacedLabel[] {
+	const measure = args.measure ?? estimateMeasurer;
 	const sorted = [...args.candidates].sort(
 		(a, b) => a.priority - b.priority || a.rank - b.rank,
 	);
 
-	const occupied: Box[] = [...args.reserved];
-	const placed: PlacedLabel[] = [];
+	const admitted: Admitted[] = [];
 	const counts = new Map<number, number>();
 
 	for (const candidate of sorted) {
@@ -152,36 +308,108 @@ export function placeLabels(args: PlaceLabelsArgs): readonly PlacedLabel[] {
 			continue;
 		}
 
-		const natural = boxFor(candidate);
-		const box = fitInside(natural, args.width, args.height);
+		const positions = positionsFor({
+			candidate,
+			measure,
+			width: args.width,
+			height: args.height,
+		});
 
-		if (box === null) {
-			continue;
-		}
-
-		if (occupied.some((other) => boxesOverlap(box, other))) {
+		if (positions.length === 0) {
 			args.warn.warn(
 				"LABEL_DROPPED",
-				`Label "${candidate.text}" collides with an already placed element.`,
+				`Label "${candidate.text}" does not fit on the canvas.`,
 				{ text: candidate.text },
 			);
 			continue;
 		}
 
-		const dx = box.minX - natural.minX;
-		const dy = box.minY - natural.minY;
-
-		occupied.push(box);
-		placed.push({
-			...candidate,
-			...(dx === 0 && dy === 0
-				? {}
-				: {
-						anchor: canvas(candidate.anchor.x + dx, candidate.anchor.y + dy),
-					}),
-			box,
-		});
+		/*
+		 * Admission spends the element's budget, whether or not the label ends
+		 * up placed: the budget bounds the search, not the outcome, which is
+		 * what keeps it out of the optimiser's inner loop.
+		 */
 		counts.set(candidate.element, used + 1);
+		admitted.push({
+			candidate,
+			positions,
+			deletionCost: deletionCost(candidate),
+		});
+	}
+
+	// Reserved boxes occupy the grid under uids past every label's.
+	const seed = new GridIndex(args.width, args.height);
+
+	for (const [index, box] of args.reserved.entries()) {
+		seed.insert(admitted.length + index, box);
+	}
+
+	const states = admitted.map((label, uid) =>
+		claim(uid, label.positions, seed),
+	);
+
+	const stages = args.annealingStages ?? 50;
+	const refined =
+		stages > 0
+			? anneal({
+					labels: admitted.map((label) => ({
+						positions: label.positions,
+						deletionCost: label.deletionCost,
+					})),
+					initial: states,
+					reserved: args.reserved,
+					width: args.width,
+					height: args.height,
+					maxStages: stages,
+				})
+			: states;
+
+	/*
+	 * The annealer optimises a soft cost, so its best labeling may still hold
+	 * slight overlaps. The map may not: re-claim every box in priority order
+	 * against a fresh grid, sliding to the next-best position on a collision
+	 * and dropping the label when none is free. A label the annealer dropped
+	 * gets one more chance here, since a free position is a free win.
+	 */
+	const grid = new GridIndex(args.width, args.height);
+
+	for (const [index, box] of args.reserved.entries()) {
+		grid.insert(admitted.length + index, box);
+	}
+
+	const placed: PlacedLabel[] = [];
+
+	for (const [uid, label] of admitted.entries()) {
+		const preferred = refined[uid] ?? -1;
+		const order =
+			preferred >= 0
+				? [
+						label.positions[preferred] as LabelPosition,
+						...label.positions.filter((_, at) => at !== preferred),
+					]
+				: [...label.positions];
+		const at = claim(uid, order, grid);
+
+		if (at === -1) {
+			args.warn.warn(
+				"LABEL_DROPPED",
+				`Label "${label.candidate.text}" collides with an already placed element.`,
+				{ text: label.candidate.text },
+			);
+			continue;
+		}
+
+		const position = order[at] as LabelPosition;
+
+		placed.push({
+			...label.candidate,
+			anchor: position.anchor,
+			align: position.align,
+			fontSize: position.fontSize,
+			lines: position.lines,
+			lineHeight: position.lineHeight,
+			box: position.box,
+		});
 	}
 
 	return placed;
