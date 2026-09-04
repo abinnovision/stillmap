@@ -1730,6 +1730,7 @@ __metadata:
     "@types/node": "npm:^26.4.0"
     "@vitest/coverage-v8": "npm:^4.1.10"
     eslint: "npm:^10.7.0"
+    opentype.js: "npm:^2.0.0"
     pbf: "npm:^5.1.2"
     prettier: "npm:^3.9.5"
     typescript: "npm:^6.0.3"
@@ -4327,6 +4328,15 @@ __metadata:
     regex: "npm:^6.1.0"
     regex-recursion: "npm:^6.0.2"
   checksum: 10/10fc62a8b166e712deaa74d905bea9133f6a558a4e710ba0a9e63ff3e51ff47a2be10eea05eeca87a16feb21469f3966c8b9731fce675229ee1e32432f3a1d69
+  languageName: node
+  linkType: hard
+
+"opentype.js@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "opentype.js@npm:2.0.0"
+  bin:
+    ot: bin/ot
+  checksum: 10/406ad80d00594f98f10873c01390a8d5533e620cd04a003acc1c7c9615eb93e0620f44cc340a92d020a94207adf540ac72deca64645af90cf83f9b8466ee690f
   languageName: node
   linkType: hard
 

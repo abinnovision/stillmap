@@ -110,6 +110,7 @@ describe("serializeScene", () => {
 						haloWidth: 3,
 						maxCount: 10,
 						element: 0,
+						align: "middle",
 						box: { minX: 0, minY: 0, maxX: 10, maxY: 10 },
 					},
 				],

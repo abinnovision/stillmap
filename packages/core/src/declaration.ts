@@ -65,6 +65,13 @@ export interface LabelDeclaration {
 	readonly maxRank?: Zoomable<number>;
 	/** Lower wins a collision. */
 	readonly priority?: number;
+	/**
+	 * Smallest scale this element's labels may shrink to when space is tight,
+	 * in (0, 1). A shrunk label costs the placement search about as much as a
+	 * poor position, so labels shrink only under real congestion. Unset never
+	 * shrinks.
+	 */
+	readonly shrink?: number;
 }
 
 export interface MarkerDeclaration {

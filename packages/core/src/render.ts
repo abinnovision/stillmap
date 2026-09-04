@@ -8,6 +8,7 @@ import {
 import { placeLabels } from "./labels.js";
 import { buildPaths } from "./layout.js";
 import { computePixelBounds, lngLatToWorld, toCanvas } from "./mercator.js";
+import { loadTextMeasurer } from "./metrics.js";
 import { resolveStyle } from "./style.js";
 import { serializeScene } from "./svg.js";
 import { computeTileCover, tileKey } from "./tile-cover.js";
@@ -177,6 +178,7 @@ function labelCandidateFor(args: CandidateArgs): LabelCandidate | null {
 		color: declaration.color ?? DEFAULT_LABEL_COLOR,
 		...(declaration.halo === undefined ? {} : { halo: declaration.halo }),
 		haloWidth: declaration.haloWidth ?? DEFAULT_HALO_WIDTH,
+		...(declaration.shrink === undefined ? {} : { shrink: declaration.shrink }),
 		maxCount: resolveZoomable(declaration.maxCount ?? defaultMaxCount, zoom),
 		element,
 	};
@@ -418,6 +420,7 @@ export async function renderScene(
 		reserved,
 		width: args.width,
 		height: args.height,
+		measure: await loadTextMeasurer(args.fonts, warn),
 		warn,
 	});
 

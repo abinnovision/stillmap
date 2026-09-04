@@ -32,6 +32,11 @@ export interface PlaceLabelsProps {
 	readonly maxRank?: Zoomable<number>;
 	/** Lower wins a collision against another label element. */
 	readonly priority?: number;
+	/**
+	 * Smallest scale labels may shrink to when space is tight, in (0, 1).
+	 * Unset never shrinks.
+	 */
+	readonly shrink?: number;
 }
 
 const OPTIONAL = [
@@ -47,6 +52,7 @@ const OPTIONAL = [
 	"maxCount",
 	"maxRank",
 	"priority",
+	"shrink",
 ] as const;
 
 /**

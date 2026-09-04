@@ -92,7 +92,7 @@ function renderLabel(label: PlacedLabel): string {
 
 	return (
 		`<text x="${num(label.anchor.x)}" y="${num(label.anchor.y)}"` +
-		` text-anchor="middle" dominant-baseline="central"` +
+		` text-anchor="${label.align}" dominant-baseline="central"` +
 		` font-family="${escapeXml(label.fontFamily)}"` +
 		` font-size="${num(label.fontSize)}" font-weight="${String(label.fontWeight)}"` +
 		` letter-spacing="${num(label.letterSpacing)}"` +
