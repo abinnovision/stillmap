@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { mapVersion } from "../../../src/render/key";
+import { maps } from "../../../src/maps";
 import { findStore } from "../../../src/stores";
 
 import type { ReactNode } from "react";
@@ -23,11 +23,13 @@ const StorePage = async ({ params }: StorePageProps): Promise<ReactNode> => {
 		notFound();
 	}
 
+	const src = await maps.url("store", { id: store.id, w: 1200, h: 600 });
+
 	return (
 		<main>
 			<figure>
 				<img
-					src={`/api/store-map/${store.id}/${mapVersion(store)}.png?size=large`}
+					src={src}
 					width={1200}
 					height={600}
 					alt={`Map showing ${store.name}`}

@@ -10,13 +10,14 @@
 		{
 			"type": "linked-versions",
 			"groupName": "stillmap",
-			"components": ["core", "sources", "react", "styles", "cli"]
+			"components": ["core", "sources", "react", "serve", "styles", "cli"]
 		}
 	],
 	"packages": {
 		"packages/core": { "component": "core" },
 		"packages/sources": { "component": "sources" },
 		"packages/react": { "component": "react" },
+		"packages/serve": { "component": "serve" },
 		"packages/styles": { "component": "styles" },
 		"packages/cli": { "component": "cli" }
 	}

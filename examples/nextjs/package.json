@@ -26,6 +26,7 @@
 	"dependencies": {
 		"@stillmap/core": "workspace:^",
 		"@stillmap/react": "workspace:^",
+		"@stillmap/serve": "workspace:^",
 		"@stillmap/sources": "workspace:^",
 		"next": "^16.3.0",
 		"react": "^19.2.0",
