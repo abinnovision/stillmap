@@ -1,7 +1,7 @@
 {
 	"$schema": "https://json.schemastore.org/package.json",
 	"name": "@stillmap/serve",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "Serve rendered stillmaps over HTTP. Framework-neutral Request to Response, with caching and signed URLs.",
 	"keywords": [
 		"map",

@@ -1,8 +1,8 @@
 {
-	"packages/core": "0.2.0",
-	"packages/sources": "0.2.0",
-	"packages/react": "0.2.0",
-	"packages/serve": "0.2.0",
-	"packages/styles": "0.2.0",
-	"packages/cli": "0.2.0"
+	"packages/core": "0.3.0",
+	"packages/sources": "0.3.0",
+	"packages/react": "0.3.0",
+	"packages/serve": "0.3.0",
+	"packages/styles": "0.3.0",
+	"packages/cli": "0.3.0"
 }
