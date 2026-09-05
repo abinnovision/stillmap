@@ -128,6 +128,7 @@ affordable.
 | `@stillmap/core`    | Rendering engine. No React, no native dependency.    |
 | `@stillmap/sources` | Tile sources and schema adapters.                    |
 | `@stillmap/react`   | JSX declaration API and `renderMap()`.               |
+| `@stillmap/serve`   | Serve rendered maps over HTTP, with caching.         |
 | `@stillmap/styles`  | Ready-made styles and their palettes.                |
 | `stillmap`          | CLI. `stillmap dev` previews templates in a browser. |
 
@@ -136,6 +137,7 @@ affordable.
 - [Styles](./docs/styles.md)
 - [Fonts](./docs/fonts.md)
 - [Tile sources](./docs/tile-sources.md)
+- [Serving over HTTP](./docs/serving.md)
 - [Previewing maps](./docs/preview.md)
 
 ## Status

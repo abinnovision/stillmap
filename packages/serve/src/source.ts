@@ -1,5 +1,4 @@
 import { defineTileSource } from "@stillmap/core";
-import { openFreeMap } from "@stillmap/sources";
 
 import type { OpenTileSource, TileSource } from "@stillmap/core";
 
@@ -10,19 +9,21 @@ export interface MemoizedSourceOptions {
 }
 
 /**
- * `openFreeMap()` resolves its TileJSON over HTTP on every open, and the engine
- * opens the source once per render, so an uncached source puts a network round
- * trip on the critical path of every cold render.
+ * Reuses one opened tile source across renders.
  *
- * This memoizes the opened handle and delegates `fetchTile` untouched: no tile
- * bytes are stored here. The TTL is what keeps the provider's URL rotation
+ * A source that resolves TileJSON over HTTP does so on every open, and the
+ * engine opens the source once per render, so an uncached source puts a network
+ * round trip on the critical path of every cold render.
+ *
+ * This memoises the opened handle and delegates `fetchTile` untouched: no tile
+ * bytes are stored here. The TTL is what keeps a provider's URL rotation
  * working as cache invalidation, being short next to a rotation and long next
  * to a request.
  */
-export function memoizedOpenFreeMap(
+export function memoizedSource(
+	inner: TileSource,
 	options: MemoizedSourceOptions = {},
 ): TileSource {
-	const inner = openFreeMap();
 	const ttlMs = options.ttlMs ?? DEFAULT_TTL_MS;
 
 	let opened: { at: number; value: Promise<OpenTileSource> } | null = null;

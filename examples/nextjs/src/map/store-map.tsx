@@ -2,10 +2,9 @@ import { Attribution, Font, Map, Pin, PlaceLabels } from "@stillmap/react";
 
 import { INTER } from "../assets";
 import { Neutral } from "./style";
-import { memoizedOpenFreeMap } from "../render/source";
 
 import type { Store } from "../stores";
-import type { TileSource } from "@stillmap/core";
+import type { FontFace, TileSource } from "@stillmap/core";
 import type { ReactNode } from "react";
 
 export const MAP_ZOOM = 13;
@@ -22,19 +21,24 @@ export const MAP_ZOOM = 13;
  */
 const PLACE_RANK = 24;
 
+/** What the server hoists, repeated here so the golden test needs no wiring. */
+const DEFAULT_FONTS: readonly FontFace[] = [{ family: "Inter", file: INTER }];
+
 export interface StoreMapProps {
 	readonly store: Store;
 	readonly width: number;
 	readonly height: number;
-	/** Injected by the golden test so it can render from committed tiles. */
-	readonly source?: TileSource;
+	/** Owned by the caller: one memoised source is shared across renders. */
+	readonly source: TileSource;
+	readonly fonts?: readonly FontFace[];
 }
 
 export const StoreMap = ({
 	store,
 	width,
 	height,
-	source = memoizedOpenFreeMap(),
+	source,
+	fonts = DEFAULT_FONTS,
 }: StoreMapProps): ReactNode => (
 	<Map
 		source={source}
@@ -44,7 +48,9 @@ export const StoreMap = ({
 		height={height}
 		background="#F5F5F3"
 	>
-		<Font family="Inter" file={INTER} />
+		{fonts.map((font) => (
+			<Font key={font.family} {...font} />
+		))}
 
 		<Neutral />
 
