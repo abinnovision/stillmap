@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/abinnovision/stillmap/compare/styles-v0.2.0...styles-v0.3.0) (2026-09-05)
+
+
+### Miscellaneous Chores
+
+* **styles:** Synchronize stillmap versions
+
 ## [0.2.0](https://github.com/abinnovision/stillmap/compare/styles-v0.1.0...styles-v0.2.0) (2026-09-02)
 
 

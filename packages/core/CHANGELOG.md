@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.0](https://github.com/abinnovision/stillmap/compare/core-v0.2.0...core-v0.3.0) (2026-09-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* **labels:** metric-driven label placement with wrapping and annealing ([#14](https://github.com/abinnovision/stillmap/issues/14))
+
+### Features
+
+* **labels:** metric-driven label placement with wrapping and annealing ([#14](https://github.com/abinnovision/stillmap/issues/14)) ([0ea396d](https://github.com/abinnovision/stillmap/commit/0ea396d4cd1c0471e14b5204702823b2133f93c7))
+
+
+### Bug Fixes
+
+* **core:** read opentype.js metrics from its ESM build ([#16](https://github.com/abinnovision/stillmap/issues/16)) ([22b03ae](https://github.com/abinnovision/stillmap/commit/22b03ae931746c7829b5d15117fbb301df667496))
+
 ## [0.2.0](https://github.com/abinnovision/stillmap/compare/core-v0.1.0...core-v0.2.0) (2026-09-02)
 
 
