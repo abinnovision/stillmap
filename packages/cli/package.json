@@ -60,16 +60,16 @@
 		"@stillmap/core": "workspace:^",
 		"@stillmap/react": "workspace:^",
 		"@stillmap/sources": "workspace:^",
-		"@types/node": "^26.4.0",
+		"@types/node": "^26.4.1",
 		"@types/react": "^19.2.17",
-		"@types/react-dom": "^19.2.3",
-		"@vitest/coverage-v8": "^4.1.10",
-		"eslint": "^10.7.0",
+		"@types/react-dom": "^19.2.7",
+		"@vitest/coverage-v8": "^5.0.0",
+		"eslint": "^10.10.0",
 		"prettier": "^3.9.5",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
-		"typescript": "^6.0.3",
-		"vitest": "^4.1.10"
+		"typescript": "^7.0.2",
+		"vitest": "^5.0.0"
 	},
 	"peerDependencies": {
 		"@stillmap/core": "workspace:^",
