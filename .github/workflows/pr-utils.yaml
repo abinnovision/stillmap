@@ -1,25 +1,22 @@
+# Contains different utility checks for Pull Requests.
 name: PR Utils
 
+# Only apply to PRs which target 'main' branch.
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
-    types:
-      - opened
-      - edited
-      - synchronize
 
 jobs:
-  commitlint:
-    name: Commitlint
+  lint-commits:
+    name: Lint commits
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    if: github.event_name == 'pull_request'
     steps:
-      - name: Run Commitlint
+      - name: Run linter
         uses: abinnovision/actions@run-commitlint-v1
-
   dependabot:
-    name: Dependabot automations
+    name: "Dependabot automations"
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
     permissions:
