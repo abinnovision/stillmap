@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/abinnovision/stillmap/compare/serve-v0.3.0...serve-v0.3.1) (2026-10-09)
+
+
+### Miscellaneous Chores
+
+* **serve:** Synchronize stillmap versions
+
 ## [0.3.0](https://github.com/abinnovision/stillmap/compare/serve-v0.2.0...serve-v0.3.0) (2026-10-09)
 
 
