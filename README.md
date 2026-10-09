@@ -135,6 +135,7 @@ affordable.
 ## Documentation
 
 - [Styles](./docs/styles.md)
+- [GeoJSON](./docs/geojson.md)
 - [Fonts](./docs/fonts.md)
 - [Tile sources](./docs/tile-sources.md)
 - [Serving over HTTP](./docs/serving.md)

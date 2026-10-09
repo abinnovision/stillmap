@@ -11,7 +11,9 @@ export type RenderWarningCode =
 	| "MARKER_IMAGE_NOT_INLINE"
 	| "FONT_NOT_EMBEDDABLE"
 	| "FONT_METRICS_UNAVAILABLE"
-	| "UNKNOWN_ELEMENT";
+	| "UNKNOWN_ELEMENT"
+	| "GEOJSON_INVALID"
+	| "LAYER_ANCHOR_MISSING";
 
 export interface RenderWarning {
 	readonly code: RenderWarningCode;

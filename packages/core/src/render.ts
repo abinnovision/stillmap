@@ -5,6 +5,7 @@ import {
 	assertFontsExist,
 	loadEmbeddableFonts,
 } from "./fonts.js";
+import { projectGeoJson } from "./geojson.js";
 import { placeLabels } from "./labels.js";
 import { buildPaths } from "./layout.js";
 import { computePixelBounds, lngLatToWorld, toCanvas } from "./mercator.js";
@@ -341,7 +342,7 @@ export async function renderScene(
 		height: args.height,
 	});
 
-	const { rules, sourceLayers } = resolveStyle({
+	const { rules, sourceLayers, dataLayers } = resolveStyle({
 		declarations: args.declarations,
 		schema: args.source.schema,
 		zoom,
@@ -388,6 +389,18 @@ export async function renderScene(
 				coord,
 				tileDisplaySize: cover.tileDisplaySize,
 				sourceLayers: wanted,
+			}),
+		);
+	}
+
+	for (const layer of dataLayers) {
+		features.push(
+			...projectGeoJson({
+				data: layer.data,
+				kind: layer.kind,
+				layer: layer.sourceLayer,
+				zoom,
+				warn,
 			}),
 		);
 	}

@@ -270,6 +270,41 @@ describe("renderScene", () => {
 		expect(countLabels(poster)).toBeGreaterThan(12);
 	});
 
+	it("paints a data layer below the roads it was declared after", async () => {
+		const result = await renderScene({
+			...base,
+			declarations: [
+				...declarations,
+				{
+					kind: "fill",
+					target: {
+						mode: "data",
+						data: {
+							type: "Polygon",
+							coordinates: [
+								[
+									[9.98, 53.545],
+									[10.005, 53.545],
+									[10.005, 53.558],
+									[9.98, 53.558],
+									[9.98, 53.545],
+								],
+							],
+						},
+					},
+					below: "road",
+					fill: "#C0FFEE",
+				},
+			],
+		});
+
+		const data = result.svg.indexOf('fill="#C0FFEE"');
+
+		expect(data).toBeGreaterThan(-1);
+		expect(data).toBeLessThan(result.svg.indexOf('stroke="#FCFBF9"'));
+		expect(data).toBeGreaterThan(result.svg.indexOf('fill="#E1E4E7"'));
+	});
+
 	it("places labels and reserves marker boxes against them", async () => {
 		const result = await renderScene({
 			...base,

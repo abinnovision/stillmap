@@ -93,6 +93,19 @@ const Mine = () => (
 );
 ```
 
+## Drawing under the streets
+
+Every style takes two slots, `belowRoads` and `belowBuildings`. Whatever you
+pass is painted at that point in the style, so the roads still cross over your
+own layers:
+
+```tsx
+<Light belowRoads={<GeoJson data={district} fill="#F2E3C6" />} />
+```
+
+The slots are just positions in the style. Any layer can also name its own
+anchor with `below`; see [GeoJSON](./geojson.md).
+
 ## Turning the labels off
 
 ```tsx

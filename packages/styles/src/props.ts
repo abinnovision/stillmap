@@ -1,4 +1,5 @@
 import type { PaletteOverride } from "@stillmap/core";
+import type { ReactNode } from "react";
 
 /** The prop surface every style in this package shares. */
 export interface StyleProps {
@@ -12,4 +13,8 @@ export interface StyleProps {
 	 * the map declares more than one.
 	 */
 	readonly fontFamily?: string;
+	/** Painted just below the first road layer, so roads cross over it. */
+	readonly belowRoads?: ReactNode;
+	/** Painted just below the buildings. */
+	readonly belowBuildings?: ReactNode;
 }

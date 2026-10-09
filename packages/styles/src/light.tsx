@@ -44,10 +44,14 @@ export const Light = ({
 	palette,
 	labels = true,
 	fontFamily,
+	belowRoads,
+	belowBuildings,
 }: StyleProps = {}): ReactNode => (
 	<Contrast
 		palette={mergePalette(LIGHT, palette)}
 		labels={labels}
 		{...(fontFamily === undefined ? {} : { fontFamily })}
+		belowRoads={belowRoads}
+		belowBuildings={belowBuildings}
 	/>
 );

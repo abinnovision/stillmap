@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import { CityCentre } from "./city-centre.tsx";
 import { Locator } from "./locator.tsx";
 import { Offices } from "./offices.tsx";
 import { PRESET_NAMES, PresetCard } from "./presets.tsx";
@@ -111,6 +112,25 @@ describe("offices", () => {
 		maybeUpdate("offices", svg);
 
 		expect(svg).toBe(readGolden("offices"));
+	});
+});
+
+describe("city-centre", () => {
+	it("paints the polygon below the roads", async () => {
+		const { svg } = await renderMap(<CityCentre source={source} />);
+
+		expect(svg.indexOf('fill="#F2E3C6"')).toBeGreaterThan(-1);
+		expect(svg.indexOf('fill="#F2E3C6"')).toBeLessThan(
+			svg.indexOf('stroke="#FFFFFF"'),
+		);
+	});
+
+	it("matches its golden", async () => {
+		const { svg } = await renderMap(<CityCentre source={source} />);
+
+		maybeUpdate("city-centre", svg);
+
+		expect(svg).toBe(readGolden("city-centre"));
 	});
 });
 

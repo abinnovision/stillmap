@@ -89,6 +89,34 @@ describe("fitMarkers", () => {
 		expect(withBox.zoom).toBeLessThan(asPoints.zoom);
 	});
 
+	it("fits an extent with no markers at all", () => {
+		const { center, zoom } = fitMarkers({
+			markers: [],
+			extent: [
+				[9.9, 53.5],
+				[10.1, 53.6],
+			],
+			width: 800,
+			height: 600,
+			maxZoom: 17,
+		});
+
+		expect(center[0]).toBeCloseTo(10.0, 3);
+		expect(zoom).toBeLessThan(17);
+	});
+
+	it("throws FIT_WITHOUT_DATA when neither markers nor extent exist", () => {
+		expect(() =>
+			fitMarkers({
+				markers: [],
+				extent: [],
+				width: 800,
+				height: 600,
+				maxZoom: 17,
+			}),
+		).toThrow(expect.objectContaining({ code: "FIT_WITHOUT_DATA" }));
+	});
+
 	it("throws when there is nothing to fit", () => {
 		expect(() =>
 			fitMarkers({ markers: [], width: 800, height: 600, maxZoom: 17 }),
