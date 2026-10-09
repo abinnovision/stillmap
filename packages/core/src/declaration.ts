@@ -2,6 +2,7 @@ import type { CanonicalKind } from "./canonical.js";
 import type { Color, Filter } from "./filter.js";
 import type { GeoJsonInput } from "./geojson.js";
 import type { CanvasPoint, LngLat } from "./geometry.js";
+import type { Attribution } from "./source.js";
 import type { Zoomable } from "./zoomable.js";
 
 export type Placement =
@@ -113,6 +114,8 @@ export interface AttributionDeclaration {
 	readonly placement?: Placement;
 	readonly color?: Color;
 	readonly fontSize?: number;
+	/** Appended after the source's attribution; never replaces it. */
+	readonly entries?: readonly Attribution[];
 }
 
 export type Declaration =

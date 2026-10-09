@@ -85,6 +85,15 @@ describe("renderScene", () => {
 		expect(result.svg).toContain("OpenFreeMap");
 	});
 
+	it("appends extra attribution after the source's", async () => {
+		const result = await renderScene({
+			...base,
+			attribution: [{ text: "Acme" }],
+		});
+
+		expect(result.svg).toMatch(/OpenFreeMap.* Acme<\/text>/);
+	});
+
 	it("is deterministic across runs", async () => {
 		const [a, b] = await Promise.all([renderScene(base), renderScene(base)]);
 
