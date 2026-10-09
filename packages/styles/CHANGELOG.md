@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/abinnovision/stillmap/compare/styles-v0.2.0...styles-v0.3.0) (2026-10-09)
+
+
+### Features
+
+* add GeoJSON layers with below anchors and style slots ([#42](https://github.com/abinnovision/stillmap/issues/42)) ([5d486f9](https://github.com/abinnovision/stillmap/commit/5d486f92b594859f651aa2e4c1bd834817f2b085))
+
+
+### Bug Fixes
+
+* **deps:** bump the production-dependencies group with 2 updates ([#24](https://github.com/abinnovision/stillmap/issues/24)) ([ed9ece0](https://github.com/abinnovision/stillmap/commit/ed9ece0d6e7d8c1029d4dac6c0fcb14853f02cc5))
+
 ## [0.2.0](https://github.com/abinnovision/stillmap/compare/styles-v0.1.0...styles-v0.2.0) (2026-09-02)
 
 

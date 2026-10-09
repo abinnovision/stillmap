@@ -1,7 +1,7 @@
 {
 	"$schema": "https://json.schemastore.org/package.json",
 	"name": "stillmap",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "CLI for stillmap. Previews map templates in the browser.",
 	"keywords": [
 		"map",

@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.3.0](https://github.com/abinnovision/stillmap/compare/react-v0.2.0...react-v0.3.0) (2026-10-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **labels:** metric-driven label placement with wrapping and annealing ([#14](https://github.com/abinnovision/stillmap/issues/14))
+
+### Features
+
+* add GeoJSON layers with below anchors and style slots ([#42](https://github.com/abinnovision/stillmap/issues/42)) ([5d486f9](https://github.com/abinnovision/stillmap/commit/5d486f92b594859f651aa2e4c1bd834817f2b085))
+* **labels:** metric-driven label placement with wrapping and annealing ([#14](https://github.com/abinnovision/stillmap/issues/14)) ([0ea396d](https://github.com/abinnovision/stillmap/commit/0ea396d4cd1c0471e14b5204702823b2133f93c7))
+
+
+### Bug Fixes
+
+* **deps:** bump the production-dependencies group with 2 updates ([#24](https://github.com/abinnovision/stillmap/issues/24)) ([ed9ece0](https://github.com/abinnovision/stillmap/commit/ed9ece0d6e7d8c1029d4dac6c0fcb14853f02cc5))
+
 ## [0.2.0](https://github.com/abinnovision/stillmap/compare/react-v0.1.0...react-v0.2.0) (2026-09-02)
 
 
