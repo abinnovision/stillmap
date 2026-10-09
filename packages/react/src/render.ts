@@ -137,6 +137,9 @@ export async function renderMap(
 		...(walked.attribution?.placement === undefined
 			? {}
 			: { attributionPlacement: walked.attribution.placement }),
+		...(walked.attribution?.entries === undefined
+			? {}
+			: { attribution: walked.attribution.entries }),
 		...(options.signal === undefined ? {} : { signal: options.signal }),
 		/*
 		 * renderScene keeps its own collector; forwarding here means each warning

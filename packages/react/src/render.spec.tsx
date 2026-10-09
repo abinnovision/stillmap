@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { Attribution } from "./attribution.js";
 import { Water } from "./layers.js";
 import { Map } from "./map.js";
 import { Pin } from "./marker.js";
@@ -54,6 +55,14 @@ describe("renderMap", () => {
 
 		expect(result.svg).toContain("#9DB59D");
 		expect(result.svg).toContain("OpenFreeMap");
+	});
+
+	it("appends product attribution after the source's", async () => {
+		const result = await renderMap(
+			basicMap(<Attribution entries={[{ text: "Acme" }]} />),
+		);
+
+		expect(result.svg).toMatch(/OpenFreeMap.* Acme<\/text>/);
 	});
 
 	it("derives the viewport from markers when asked to fit", async () => {

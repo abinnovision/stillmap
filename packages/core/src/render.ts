@@ -29,7 +29,7 @@ import type { Color } from "./filter.js";
 import type { FontFace } from "./fonts.js";
 import type { LngLatLike, PixelBounds } from "./geometry.js";
 import type { Box, LabelCandidate } from "./labels.js";
-import type { TileSource } from "./source.js";
+import type { Attribution, TileSource } from "./source.js";
 import type { OverlayMarkup } from "./svg.js";
 import type { TileCache } from "./tiles.js";
 import type { RenderWarning, WarningCollector } from "./warnings.js";
@@ -91,6 +91,8 @@ export interface RenderSceneArgs {
 	readonly locale?: string;
 	readonly scale?: number;
 	readonly attributionPlacement?: Placement;
+	/** Appended after the source's attribution; never replaces it. */
+	readonly attribution?: readonly Attribution[];
 	readonly signal?: AbortSignal;
 	readonly cache?: TileCache;
 	readonly onWarning?: (warning: RenderWarning) => void;
@@ -465,12 +467,13 @@ export async function renderScene(
 		warn,
 	});
 	const attributionPlacement = args.attributionPlacement ?? "bottom-right";
+	const attribution = [...args.source.attribution, ...(args.attribution ?? [])];
 	const projectedOverlays = projectOverlays({
 		overlays: args.overlays ?? [],
 		width: args.width,
 		height: args.height,
 		attributionPlacement,
-		hasAttribution: args.source.attribution.some((entry) => entry.text !== ""),
+		hasAttribution: attribution.some((entry) => entry.text !== ""),
 	});
 	const overlays = [
 		...projectedMarkers.overlays,
@@ -507,7 +510,7 @@ export async function renderScene(
 		paths,
 		labels,
 		overlays,
-		attribution: args.source.attribution,
+		attribution,
 		attributionPlacement,
 		embeddedFonts,
 	});
