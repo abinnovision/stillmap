@@ -9,6 +9,7 @@ import type {
 	LabelDeclaration,
 	LayerDeclaration,
 	MarkerDeclaration,
+	OverlayDeclaration,
 	WarningCollector,
 } from "@stillmap/core";
 import type { ReactElement, ReactNode } from "react";
@@ -20,6 +21,7 @@ export interface WalkResult {
 	readonly layers: readonly LayerDeclaration[];
 	readonly labels: readonly LabelDeclaration[];
 	readonly markers: readonly MarkerDeclaration[];
+	readonly overlays: readonly OverlayDeclaration[];
 	readonly attribution: AttributionDeclaration | null;
 }
 
@@ -29,6 +31,7 @@ interface Sink {
 	layers: LayerDeclaration[];
 	labels: LabelDeclaration[];
 	markers: MarkerDeclaration[];
+	overlays: OverlayDeclaration[];
 	attribution: AttributionDeclaration | null;
 	readonly context: DeclarationContext;
 }
@@ -57,6 +60,9 @@ function collect(
 			break;
 		case "marker":
 			sink.markers.push(declaration as MarkerDeclaration);
+			break;
+		case "overlay":
+			sink.overlays.push(declaration as OverlayDeclaration);
 			break;
 		case "attribution":
 			sink.attribution = declaration as AttributionDeclaration;
@@ -166,6 +172,7 @@ export function walk(node: ReactNode, warn: WarningCollector): WalkResult {
 		layers: [],
 		labels: [],
 		markers: [],
+		overlays: [],
 		attribution: null,
 		context: { warn },
 	};

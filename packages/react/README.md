@@ -42,6 +42,34 @@ A marker reserves its box against label placement, so a label underneath it is
 dropped rather than drawn beneath the pin. Pass `reserve={false}` to keep the
 labels and let the marker sit over them.
 
+## Overlays
+
+`<Overlay>` pins a box to an image corner instead of a coordinate, so legends
+and logos stay put under `fit`. It takes a `placement`, a pixel `size`, and an
+optional `inset` (a number, or `[x, y]`). An overlay in the attribution's corner
+moves inward to clear the attribution text. Overlays in one corner are not stacked;
+separate them with `inset`. Like a marker, an overlay reserves its box against
+labels unless `reserve={false}`.
+
+`loadTextMeasurer` from `@stillmap/core` sizes a box around its text:
+
+```tsx
+const measure = await loadTextMeasurer([{ family: "Inter", file: inter }]);
+const { width } = measure("Offices", {
+  fontFamily: "Inter",
+  fontWeight: 400,
+  fontSize: 12,
+  letterSpacing: 0,
+});
+
+<Overlay placement="top-right" size={[width + 24, 32]} inset={12}>
+  <rect width={width + 24} height={32} rx={6} fill="#FFFFFF" />
+  <text x={12} y={21} fontFamily="Inter" fontSize={12}>
+    Offices
+  </text>
+</Overlay>;
+```
+
 ## Your own geometry
 
 `<GeoJson>` draws GeoJSON with the same paint rules as tile features. Polygons

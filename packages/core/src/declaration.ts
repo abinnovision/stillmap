@@ -109,6 +109,19 @@ export interface MarkerDeclaration {
 	readonly markup: string;
 }
 
+export interface OverlayDeclaration {
+	readonly kind: "overlay";
+	/** Image corner the box is pinned to. */
+	readonly placement: Placement;
+	readonly size: readonly [width: number, height: number];
+	/** Distance from the pinned edges. A scalar applies to both axes. */
+	readonly inset?: number | readonly [x: number, y: number];
+	/** See `MarkerDeclaration.reserve`. Defaults to true. */
+	readonly reserve?: boolean;
+	/** Pre-rendered SVG markup for the overlay's children. */
+	readonly markup: string;
+}
+
 export interface AttributionDeclaration {
 	readonly kind: "attribution";
 	readonly placement?: Placement;
@@ -122,6 +135,7 @@ export type Declaration =
 	| LayerDeclaration
 	| LabelDeclaration
 	| MarkerDeclaration
+	| OverlayDeclaration
 	| AttributionDeclaration;
 
 /** Offset from a marker's box origin to the point that lands on the anchor. */
@@ -161,4 +175,30 @@ export function markerOrigin(
 	const [ox, oy] = declaration.offset ?? [0, 0];
 
 	return { x: at.x - dx + ox, y: at.y - dy + oy };
+}
+
+/**
+ * Where an overlay's box origin sits on the canvas. `shift` moves the box away
+ * from its vertical edge, to clear a band the box would otherwise cover.
+ */
+export function overlayOrigin(
+	declaration: OverlayDeclaration,
+	canvas: { readonly width: number; readonly height: number },
+	shift = 0,
+): { readonly x: number; readonly y: number } {
+	const { width, height } = canvas;
+	const [boxWidth, boxHeight] = declaration.size;
+	const [ix, iy] =
+		typeof declaration.inset === "number"
+			? [declaration.inset, declaration.inset]
+			: (declaration.inset ?? [0, 0]);
+
+	const x = declaration.placement.endsWith("right")
+		? width - boxWidth - ix
+		: ix;
+	const y = declaration.placement.startsWith("bottom")
+		? height - boxHeight - iy - shift
+		: iy + shift;
+
+	return { x, y };
 }

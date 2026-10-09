@@ -95,11 +95,12 @@ async function parseFont(file: string): Promise<OpentypeFont | null> {
  * Reads every declared font once and returns a measurer backed by real
  * advance widths. A file the parser cannot read (a `.ttc` collection, say)
  * degrades to the estimate with a warning rather than failing the render:
- * the numbers place boxes, resvg still draws the text.
+ * the numbers place boxes, resvg still draws the text. Without `warn` the
+ * degradation is silent.
  */
 export async function loadTextMeasurer(
 	fonts: readonly FontFace[],
-	warn: WarningCollector,
+	warn?: WarningCollector,
 ): Promise<TextMeasurer> {
 	const families = new Map<string, LoadedFace[]>();
 
@@ -107,7 +108,7 @@ export async function loadTextMeasurer(
 		const font = await parseFont(face.file);
 
 		if (font === null) {
-			warn.warn(
+			warn?.warn(
 				"FONT_METRICS_UNAVAILABLE",
 				`${face.file} could not be parsed for metrics. Labels in "${face.family}" are measured by estimate and may sit slightly tighter or looser than they draw.`,
 				{ family: face.family, file: face.file },

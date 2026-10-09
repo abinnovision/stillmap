@@ -136,6 +136,11 @@ function renderFontFaces(scene: Scene): string {
 	return `<defs><style type="text/css">${fonts.map(renderFontFace).join("")}</style></defs>`;
 }
 
+/** Height of the strip the attribution text occupies at its edge. */
+export function attributionBandHeight(): number {
+	return ATTRIBUTION_FONT_SIZE + ATTRIBUTION_PADDING;
+}
+
 function renderAttribution(scene: Scene): string {
 	const text = scene.attribution.map((entry) => entry.text).join(" ");
 

@@ -4,6 +4,7 @@ import type {
 	LabelDeclaration,
 	LayerDeclaration,
 	MarkerDeclaration,
+	OverlayDeclaration,
 	WarningCollector,
 } from "@stillmap/core";
 import type { ReactElement } from "react";
@@ -16,13 +17,14 @@ import type { ReactElement } from "react";
 export const STILLMAP_KIND = Symbol.for("stillmap.kind");
 
 export type ComponentKind =
-	"map" | "layer" | "labels" | "marker" | "attribution" | "font";
+	"map" | "layer" | "labels" | "marker" | "overlay" | "attribution" | "font";
 
 /** What a component's props convert to. `map` is handled by the walker. */
 export type ProducedDeclaration =
 	| LayerDeclaration
 	| LabelDeclaration
 	| MarkerDeclaration
+	| OverlayDeclaration
 	| AttributionDeclaration
 	| FontFace
 	| null;

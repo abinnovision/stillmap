@@ -126,6 +126,7 @@ export async function renderMap(
 		declarations: walked.layers,
 		labelDeclarations: walked.labels,
 		markers: walked.markers,
+		overlays: walked.overlays,
 		fonts: walked.fonts,
 		...(props.background === undefined ? {} : { background: props.background }),
 		...(props.locale === undefined ? {} : { locale: props.locale }),
