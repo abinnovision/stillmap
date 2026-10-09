@@ -1,4 +1,4 @@
-import { markerOrigin } from "./declaration.js";
+import { markerOrigin, overlayOrigin } from "./declaration.js";
 import { decodeTile } from "./decode.js";
 import {
 	assertFontCoversLabels,
@@ -11,7 +11,7 @@ import { buildPaths } from "./layout.js";
 import { computePixelBounds, lngLatToWorld, toCanvas } from "./mercator.js";
 import { loadTextMeasurer } from "./metrics.js";
 import { resolveStyle } from "./style.js";
-import { serializeScene } from "./svg.js";
+import { attributionBandHeight, serializeScene } from "./svg.js";
 import { computeTileCover, tileKey } from "./tile-cover.js";
 import { createTileCache, fetchTiles } from "./tiles.js";
 import { createWarningCollector } from "./warnings.js";
@@ -21,6 +21,7 @@ import type {
 	LabelDeclaration,
 	LayerDeclaration,
 	MarkerDeclaration,
+	OverlayDeclaration,
 	Placement,
 } from "./declaration.js";
 import type { DecodedFeature } from "./decode.js";
@@ -75,6 +76,8 @@ export interface RenderSceneArgs {
 	readonly declarations: readonly LayerDeclaration[];
 	readonly labelDeclarations: readonly LabelDeclaration[];
 	readonly markers: readonly MarkerDeclaration[];
+	/** Image-pinned boxes, drawn after the markers. */
+	readonly overlays?: readonly OverlayDeclaration[];
 	readonly fonts: readonly FontFace[];
 	/**
 	 * Write every declared font into the SVG as an `@font-face` data URI.
@@ -300,6 +303,46 @@ function projectMarkers(args: ProjectMarkersArgs): ProjectedMarkers {
 	return { overlays, reserved };
 }
 
+interface ProjectOverlaysArgs {
+	readonly overlays: readonly OverlayDeclaration[];
+	readonly width: number;
+	readonly height: number;
+	readonly attributionPlacement: Placement;
+	readonly hasAttribution: boolean;
+}
+
+/**
+ * Pins overlays to the canvas. One that shares the attribution's corner is
+ * moved inward by the attribution band so the structural credit stays clear.
+ */
+function projectOverlays(args: ProjectOverlaysArgs): ProjectedMarkers {
+	const { overlays, width, height, attributionPlacement } = args;
+	const markup: OverlayMarkup[] = [];
+	const reserved: Box[] = [];
+
+	for (const overlay of overlays) {
+		const shift =
+			args.hasAttribution && overlay.placement === attributionPlacement
+				? attributionBandHeight()
+				: 0;
+		const origin = overlayOrigin(overlay, { width, height }, shift);
+		const [boxWidth, boxHeight] = overlay.size;
+
+		if (overlay.reserve !== false) {
+			reserved.push({
+				minX: origin.x,
+				minY: origin.y,
+				maxX: origin.x + boxWidth,
+				maxY: origin.y + boxHeight,
+			});
+		}
+
+		markup.push({ markup: overlay.markup, x: origin.x, y: origin.y });
+	}
+
+	return { overlays: markup, reserved };
+}
+
 export async function renderScene(
 	args: RenderSceneArgs,
 ): Promise<RenderedScene> {
@@ -413,7 +456,7 @@ export async function renderScene(
 		height: args.height,
 	});
 
-	const { overlays, reserved } = projectMarkers({
+	const projectedMarkers = projectMarkers({
 		markers: args.markers,
 		zoom,
 		bounds,
@@ -421,6 +464,22 @@ export async function renderScene(
 		height: args.height,
 		warn,
 	});
+	const attributionPlacement = args.attributionPlacement ?? "bottom-right";
+	const projectedOverlays = projectOverlays({
+		overlays: args.overlays ?? [],
+		width: args.width,
+		height: args.height,
+		attributionPlacement,
+		hasAttribution: args.source.attribution.some((entry) => entry.text !== ""),
+	});
+	const overlays = [
+		...projectedMarkers.overlays,
+		...projectedOverlays.overlays,
+	];
+	const reserved = [
+		...projectedMarkers.reserved,
+		...projectedOverlays.reserved,
+	];
 
 	const labels = placeLabels({
 		candidates: buildLabelCandidates({
@@ -449,7 +508,7 @@ export async function renderScene(
 		labels,
 		overlays,
 		attribution: args.source.attribution,
-		attributionPlacement: args.attributionPlacement ?? "bottom-right",
+		attributionPlacement,
 		embeddedFonts,
 	});
 
