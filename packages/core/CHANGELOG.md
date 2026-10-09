@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/abinnovision/stillmap/compare/core-v0.3.0...core-v0.3.1) (2026-10-09)
+
+
+### Features
+
+* add Overlay component pinned to image corners ([#43](https://github.com/abinnovision/stillmap/issues/43)) ([1659c32](https://github.com/abinnovision/stillmap/commit/1659c32bbb49ceea76e603ff7cbe2b65168cf117))
+* **react:** allow appending product attribution entries ([#44](https://github.com/abinnovision/stillmap/issues/44)) ([ccc9b33](https://github.com/abinnovision/stillmap/commit/ccc9b33c96ecd0c29726d6e5fc7290f5e55d9747))
+
 ## [0.3.0](https://github.com/abinnovision/stillmap/compare/core-v0.2.0...core-v0.3.0) (2026-10-09)
 
 
