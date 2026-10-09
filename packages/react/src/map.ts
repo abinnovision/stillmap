@@ -20,8 +20,11 @@ export interface CenteredView {
 }
 
 export interface FittedView {
-	/** Derive the view from every marker declared in the tree. */
-	readonly fit: "markers";
+	/**
+	 * Derive the view from every marker declared in the tree, and under
+	 * `"data"` from every GeoJSON layer as well.
+	 */
+	readonly fit: "markers" | "data";
 	readonly padding?:
 		| number
 		| readonly [top: number, right: number, bottom: number, left: number];

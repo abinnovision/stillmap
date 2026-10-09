@@ -4,6 +4,7 @@ export * from "./decode.js";
 export * from "./errors.js";
 export * from "./filter.js";
 export * from "./fonts.js";
+export * from "./geojson.js";
 export * from "./geometry.js";
 export * from "./labels.js";
 export * from "./layout.js";

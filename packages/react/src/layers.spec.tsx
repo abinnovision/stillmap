@@ -82,6 +82,17 @@ describe("raw layer components", () => {
 		});
 	});
 
+	it("draws GeoJSON data in place of a source layer", () => {
+		const data = { type: "Point", coordinates: [0, 0] } as const;
+
+		expect(layers(<Fill data={data} fill="#fff" below="road" />)[0]).toEqual({
+			kind: "fill",
+			target: { mode: "data", data },
+			below: "road",
+			fill: "#fff",
+		});
+	});
+
 	it("emits a line declaration for Line", () => {
 		expect(
 			layers(<Line layer="transportation" stroke="#fff" width={2} />)[0],

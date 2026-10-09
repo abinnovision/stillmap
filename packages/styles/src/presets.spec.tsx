@@ -1,4 +1,4 @@
-import { Attribution, Font, Map, renderMap } from "@stillmap/react";
+import { Attribution, Fill, Font, Map, renderMap } from "@stillmap/react";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
@@ -8,7 +8,7 @@ import { Neutral, NEUTRAL } from "./neutral.js";
 import { createFixtureSource } from "../test/support/fixture-source.js";
 
 import type { StyleProps } from "./props.js";
-import type { LngLat, Palette } from "@stillmap/core";
+import type { GeoJsonPolygon, LngLat, Palette } from "@stillmap/core";
 import type { RenderedSvg } from "@stillmap/react";
 import type { ReactNode } from "react";
 
@@ -53,6 +53,19 @@ function render(
 	);
 }
 
+const AREA: GeoJsonPolygon = {
+	type: "Polygon",
+	coordinates: [
+		[
+			[9.97, 53.54],
+			[10.02, 53.54],
+			[10.02, 53.56],
+			[9.97, 53.56],
+			[9.97, 53.54],
+		],
+	],
+};
+
 const PRESETS: readonly [string, (props?: StyleProps) => ReactNode, Palette][] =
 	[
 		["neutral", Neutral, NEUTRAL],
@@ -94,6 +107,26 @@ describe.each(PRESETS)("%s", (_name, Style, palette) => {
 		expect(without.svg).not.toContain("Hamburg");
 		/* Attribution is structural, so one text element always survives. */
 		expect(without.svg.match(/<text/g)).toHaveLength(1);
+	});
+
+	it("paints its slots below the buildings and below the roads", async () => {
+		const { svg } = await render(
+			<Style
+				belowBuildings={<Fill data={AREA} fill="#00FF01" />}
+				belowRoads={<Fill data={AREA} fill="#00FF02" />}
+			/>,
+		);
+		const buildings = svg.indexOf('fill="#00FF01"');
+		const roads = svg.indexOf('fill="#00FF02"');
+
+		expect(buildings).toBeGreaterThan(-1);
+		expect(roads).toBeGreaterThan(buildings);
+		expect(roads).toBeGreaterThan(
+			svg.indexOf(`fill="${palette.geometry.water}"`),
+		);
+		expect(roads).toBeLessThan(
+			svg.indexOf(`stroke="${palette.geometry.road}"`),
+		);
 	});
 
 	it("adopts the family the map declares", async () => {

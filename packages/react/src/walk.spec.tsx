@@ -20,7 +20,7 @@ function layersOf(node: ReactNode): readonly string[] {
 	const result = walk(node, createWarningCollector({}));
 
 	return result.layers.map((layer) =>
-		layer.target.mode === "raw" ? layer.target.sourceLayer : layer.target.kind,
+		layer.target.mode === "raw" ? layer.target.sourceLayer : layer.target.mode,
 	);
 }
 

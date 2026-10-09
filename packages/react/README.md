@@ -42,12 +42,30 @@ A marker reserves its box against label placement, so a label underneath it is
 dropped rather than drawn beneath the pin. Pass `reserve={false}` to keep the
 labels and let the marker sit over them.
 
+## Your own geometry
+
+`<GeoJson>` draws GeoJSON with the same paint rules as tile features. Polygons
+fill, lines stroke, and points become pins. `below` paints any layer just
+under the first layer of a canonical kind, and `fit="data"` fits the view to
+it:
+
+```tsx
+<Map source={openFreeMap()} width={1200} height={630} fit="data" padding={40}>
+  <Font family="Inter" file={inter} />
+  <Water fill="#E1E4E7" />
+  <Road stroke="#FFFFFF" width={2} />
+  <GeoJson data={district} fill="#F2E3C6" below="road" />
+</Map>
+```
+
 There is no reconciler, so hooks, context, and async components do not work.
 
 ## Documentation
 
 - [Styles](../../docs/styles.md), the three shipped styles and how to
   recolour them
+- [GeoJSON](../../docs/geojson.md), drawing your own geometry and placing it
+  under the streets
 - [Fonts](../../docs/fonts.md), including the Turbopack path caveat, why
   `.woff2` is rejected, and how variable fonts behave
 - [Tile sources](../../docs/tile-sources.md), including attribution and

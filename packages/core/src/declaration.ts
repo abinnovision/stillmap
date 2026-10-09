@@ -1,5 +1,6 @@
 import type { CanonicalKind } from "./canonical.js";
 import type { Color, Filter } from "./filter.js";
+import type { GeoJsonInput } from "./geojson.js";
 import type { CanvasPoint, LngLat } from "./geometry.js";
 import type { Zoomable } from "./zoomable.js";
 
@@ -17,19 +18,28 @@ export type MarkerAnchor =
 	| "bottom-left"
 	| "bottom-right";
 
-/** How a layer addresses its features: through the schema, or by raw name. */
+/**
+ * How a layer addresses its features: through the schema, by raw name, or as
+ * GeoJSON supplied with the declaration.
+ */
 export type LayerTarget =
 	| {
 			readonly mode: "canonical";
 			readonly kind: CanonicalKind;
 			readonly classes?: readonly string[];
 	  }
-	| { readonly mode: "raw"; readonly sourceLayer: string };
+	| { readonly mode: "raw"; readonly sourceLayer: string }
+	| { readonly mode: "data"; readonly data: GeoJsonInput };
 
 export interface LayerDeclaration {
 	readonly kind: "fill" | "line";
 	readonly target: LayerTarget;
 	readonly filter?: Filter;
+	/**
+	 * Paint just below the first layer targeting this canonical kind, wherever
+	 * this one is declared. Stays in place when no such layer exists.
+	 */
+	readonly below?: CanonicalKind;
 	readonly minZoom?: number;
 	readonly maxZoom?: number;
 	readonly fill?: Zoomable<Color>;
