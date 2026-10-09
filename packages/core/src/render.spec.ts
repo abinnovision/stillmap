@@ -7,7 +7,11 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { renderScene } from "./render.js";
 import { createFixtureSource } from "../test/support/fixture-source.js";
 
-import type { LayerDeclaration, MarkerDeclaration } from "./declaration.js";
+import type {
+	LayerDeclaration,
+	MarkerDeclaration,
+	OverlayDeclaration,
+} from "./declaration.js";
 import type { RenderSceneArgs } from "./render.js";
 
 const declarations: LayerDeclaration[] = [
@@ -167,6 +171,53 @@ describe("renderScene", () => {
 		// The marker covers the whole canvas, so reserving leaves no room.
 		expect(countLabels(reserved.svg)).toBe(0);
 		expect(countLabels(overlaid.svg)).toBeGreaterThan(0);
+	});
+
+	describe("overlays", () => {
+		const legend: OverlayDeclaration = {
+			kind: "overlay",
+			placement: "bottom-right",
+			size: [100, 40],
+			markup: '<rect width="100" height="40" />',
+		};
+
+		it("draws a pinned overlay clear of the attribution band", async () => {
+			const result = await renderScene({ ...base, overlays: [legend] });
+
+			// 300 - 40 high, less the 15px attribution band.
+			expect(result.svg).toContain(
+				'<g transform="translate(1100 245)"><rect width="100" height="40" /></g>',
+			);
+		});
+
+		it("does not shift an overlay in another corner", async () => {
+			const result = await renderScene({
+				...base,
+				overlays: [{ ...legend, placement: "bottom-left" }],
+			});
+
+			expect(result.svg).toContain('<g transform="translate(0 260)">');
+		});
+
+		it("reserves its box against labels unless it opts out", async () => {
+			const shared = {
+				...base,
+				fonts: [{ family: "Inter", file: fontFile }],
+				labelDeclarations: [
+					{ kind: "labels", fontSize: 15, maxCount: 6 } as const,
+				],
+			};
+			const cover: OverlayDeclaration = { ...legend, size: [1200, 300] };
+
+			const reserved = await renderScene({ ...shared, overlays: [cover] });
+			const overlaid = await renderScene({
+				...shared,
+				overlays: [{ ...cover, reserve: false }],
+			});
+
+			expect(countLabels(reserved.svg)).toBe(0);
+			expect(countLabels(overlaid.svg)).toBeGreaterThan(0);
+		});
 	});
 
 	it("embeds declared fonts only when asked", async () => {
