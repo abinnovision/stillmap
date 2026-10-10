@@ -5,6 +5,7 @@ import { Brussels } from "./brussels.tsx";
 import { Locator } from "./locator.tsx";
 import { Offices } from "./offices.tsx";
 import { PRESET_NAMES, PresetCard } from "./presets.tsx";
+import { Property } from "./property.tsx";
 
 import type { Office } from "./offices.tsx";
 import type { LngLat } from "@stillmap/core";
@@ -38,6 +39,7 @@ export async function main(): Promise<void> {
 		scale: 2,
 	});
 	const brussels = await renderMap(<Brussels />, { format: "png", scale: 2 });
+	const property = await renderMap(<Property />, { format: "png", scale: 2 });
 	const presets = await Promise.all(
 		PRESET_NAMES.map(async (preset) => ({
 			preset,
@@ -60,6 +62,8 @@ export async function main(): Promise<void> {
 		["offices.svg", offices.svg],
 		["brussels.png", brussels.png],
 		["brussels.svg", brussels.svg],
+		["property.png", property.png],
+		["property.svg", property.svg],
 		["banner.png", banner.png],
 		...presets.flatMap(({ preset, result }) => [
 			[`preset-${preset}.png`, result.png] as const,
@@ -75,6 +79,7 @@ export async function main(): Promise<void> {
 		...locator.warnings,
 		...offices.warnings,
 		...brussels.warnings,
+		...property.warnings,
 		...banner.warnings,
 		...presets.flatMap(({ result }) => result.warnings),
 	]) {

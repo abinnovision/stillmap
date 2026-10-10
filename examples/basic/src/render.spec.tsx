@@ -7,6 +7,8 @@ import { describe, expect, it } from "vitest";
 import { Locator } from "./locator.tsx";
 import { Offices } from "./offices.tsx";
 import { PRESET_NAMES, PresetCard } from "./presets.tsx";
+import { nearest, POIS, PROPERTY } from "./property-data.ts";
+import { Property } from "./property.tsx";
 import { createFixtureSource } from "../test/support/fixture-source.ts";
 
 import type { Office } from "./offices.tsx";
@@ -133,5 +135,38 @@ describe.each(PRESET_NAMES)("preset %s", (preset) => {
 		maybeUpdate(`preset-${preset}`, svg);
 
 		expect(svg).toBe(readGolden(`preset-${preset}`));
+	});
+});
+
+describe("property", () => {
+	// The fixtures are z13 tiles; the component defaults to z14.
+	const element = <Property source={source} zoom={13} />;
+
+	it("renders with no schema or marker warnings", async () => {
+		const result = await renderMap(element);
+
+		expect(
+			result.warnings.filter(
+				(w) => w.code.startsWith("SCHEMA_") || w.code.startsWith("MARKER_"),
+			),
+		).toEqual([]);
+	});
+
+	it("measures the nearest point of interest per category", () => {
+		const distances = Object.fromEntries(
+			nearest(PROPERTY.position, POIS).map((n) => [n.category, n.distance]),
+		);
+
+		// About 104 m east and 19 m north, and 228 m west and 281 m south.
+		expect(distances["cafe"]).toBe(100);
+		expect(distances["doctor"]).toBe(350);
+	});
+
+	it("matches its golden", async () => {
+		const { svg } = await renderMap(element);
+
+		maybeUpdate("property", svg);
+
+		expect(svg).toBe(readGolden("property"));
 	});
 });

@@ -6,6 +6,7 @@ import { Brussels } from "./brussels.tsx";
 import { page } from "./gallery-page.ts";
 import { Locator } from "./locator.tsx";
 import { Offices } from "./offices.tsx";
+import { Property } from "./property.tsx";
 
 import type { GallerySection } from "./gallery-page.ts";
 import type { Office } from "./offices.tsx";
@@ -63,6 +64,17 @@ const ENTRIES: readonly Entry[] = [
 			"the place label underneath survives.",
 		element: <Brussels />,
 		source: "src/brussels.tsx",
+	},
+	{
+		id: "property",
+		title: "A listing map",
+		blurb:
+			"One property and what is within walking distance of it, on a " +
+			"hand-built style. Points of interest are coloured by category, and " +
+			"the walking rings are sized from the ground resolution so they stay " +
+			"true to distance at any zoom.",
+		element: <Property />,
+		source: "src/property.tsx",
 	},
 ];
 
