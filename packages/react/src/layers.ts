@@ -6,6 +6,7 @@ import type {
 	ClassOf,
 	Color,
 	Filter,
+	GeoJsonInput,
 	LayerDeclaration,
 	Zoomable,
 } from "@stillmap/core";
@@ -13,6 +14,8 @@ import type {
 export interface LayerProps {
 	readonly minZoom?: number;
 	readonly maxZoom?: number;
+	/** Paint just below the first layer of this kind, wherever it is declared. */
+	readonly below?: CanonicalKind;
 }
 
 export interface FillStyle {
@@ -37,6 +40,14 @@ export interface CanonicalProps<K extends CanonicalKind> extends LayerProps {
 /** A layer addressed by native source-layer name. Bypasses the schema. */
 export interface RawProps extends LayerProps {
 	readonly layer: string;
+	readonly data?: never;
+	readonly filter?: Filter;
+}
+
+/** A layer drawn from GeoJSON supplied in place of a source layer. */
+export interface DataProps extends LayerProps {
+	readonly data: GeoJsonInput;
+	readonly layer?: never;
 	readonly filter?: Filter;
 }
 
@@ -44,7 +55,7 @@ type AnyProps = Readonly<Record<string, unknown>>;
 
 const FILL_KEYS = ["fill", "fillOpacity"] as const;
 const STROKE_KEYS = ["stroke", "width", "dash", "opacity"] as const;
-const BOUND_KEYS = ["minZoom", "maxZoom", "filter"] as const;
+const BOUND_KEYS = ["minZoom", "maxZoom", "filter", "below"] as const;
 
 /**
  * Copies only the keys that are actually present.
@@ -96,18 +107,22 @@ function canonicalLayer<K extends CanonicalKind, P extends CanonicalProps<K>>(
 	});
 }
 
-function rawLayer<P extends RawProps>(
+function rawLayer<P extends RawProps | DataProps>(
 	displayName: string,
 	geometry: "fill" | "line",
 ): StillmapComponent<P> {
 	const paintKeys = geometry === "fill" ? FILL_KEYS : STROKE_KEYS;
 
 	return defineComponent<P>(displayName, "layer", (props): LayerDeclaration => {
-		const record = props as AnyProps;
+		const target: RawProps | DataProps = props;
+		const record: AnyProps = { ...target };
 
 		return {
 			kind: geometry,
-			target: { mode: "raw", sourceLayer: props.layer },
+			target:
+				target.data === undefined
+					? { mode: "raw", sourceLayer: target.layer }
+					: { mode: "data", data: target.data },
 			...pick(record, BOUND_KEYS),
 			...pick(record, paintKeys),
 		};
@@ -160,8 +175,20 @@ export const Boundary = canonicalLayer<
 	CanonicalProps<"boundary"> & StrokeStyle
 >("Boundary", "boundary", "line");
 
-/** Raw escape hatch: a filled layer addressed by native source-layer name. */
-export const Fill = rawLayer<RawProps & FillStyle>("Fill", "fill");
+/**
+ * Raw escape hatch: a filled layer addressed by native source-layer name, or
+ * drawn from GeoJSON `data`.
+ */
+export const Fill = rawLayer<(RawProps | DataProps) & FillStyle>(
+	"Fill",
+	"fill",
+);
 
-/** Raw escape hatch: a stroked layer addressed by native source-layer name. */
-export const Line = rawLayer<RawProps & StrokeStyle>("Line", "line");
+/**
+ * Raw escape hatch: a stroked layer addressed by native source-layer name, or
+ * drawn from GeoJSON `data`.
+ */
+export const Line = rawLayer<(RawProps | DataProps) & StrokeStyle>(
+	"Line",
+	"line",
+);

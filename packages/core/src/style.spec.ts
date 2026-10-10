@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveRule, resolveStyle } from "./style.js";
+import { orderDeclarations, resolveRule, resolveStyle } from "./style.js";
 import { createWarningCollector } from "./warnings.js";
 
 import type { LayerDeclaration } from "./declaration.js";
@@ -218,6 +218,79 @@ describe("resolveStyle", () => {
 
 		expect(resolveRule(bridge, rules)).toBe(rules[0]);
 		expect(resolveRule(ford, rules)).toBeNull();
+	});
+});
+
+describe("orderDeclarations", () => {
+	const water: LayerDeclaration = {
+		kind: "fill",
+		target: { mode: "canonical", kind: "water" },
+	};
+	const road: LayerDeclaration = {
+		kind: "line",
+		target: { mode: "canonical", kind: "road" },
+	};
+	const first: LayerDeclaration = {
+		kind: "fill",
+		target: { mode: "raw", sourceLayer: "first" },
+		below: "road",
+	};
+	const second: LayerDeclaration = {
+		kind: "fill",
+		target: { mode: "raw", sourceLayer: "second" },
+		below: "road",
+	};
+
+	it("moves an anchored layer before the first layer of its kind", () => {
+		expect(orderDeclarations([water, road, road, first], warn())).toEqual([
+			water,
+			first,
+			road,
+			road,
+		]);
+	});
+
+	it("keeps several layers on one anchor in document order", () => {
+		expect(orderDeclarations([road, first, second], warn())).toEqual([
+			first,
+			second,
+			road,
+		]);
+	});
+
+	it("leaves a layer in place and warns when its anchor is missing", () => {
+		const collector = warn();
+
+		expect(orderDeclarations([first, water], collector)).toEqual([
+			first,
+			water,
+		]);
+		expect(collector.warnings.map((w) => w.code)).toEqual([
+			"LAYER_ANCHOR_MISSING",
+		]);
+	});
+});
+
+describe("data layers", () => {
+	const data = { type: "Point", coordinates: [0, 0] } as const;
+
+	it("gives each data layer its own synthetic source layer", () => {
+		const { rules, sourceLayers, dataLayers } = resolveStyle({
+			declarations: [
+				{ kind: "fill", target: { mode: "data", data }, fill: "#a" },
+				{ kind: "line", target: { mode: "data", data }, stroke: "#b" },
+			],
+			schema,
+			zoom: 13,
+			warn: warn(),
+		});
+
+		expect(rules.map((r) => r.sourceLayer)).toEqual(["data:0", "data:1"]);
+		expect(dataLayers.map((l) => [l.sourceLayer, l.kind])).toEqual([
+			["data:0", "fill"],
+			["data:1", "line"],
+		]);
+		expect(sourceLayers).toEqual([]);
 	});
 });
 

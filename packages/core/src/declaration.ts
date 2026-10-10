@@ -1,6 +1,8 @@
 import type { CanonicalKind } from "./canonical.js";
 import type { Color, Filter } from "./filter.js";
+import type { GeoJsonInput } from "./geojson.js";
 import type { CanvasPoint, LngLat } from "./geometry.js";
+import type { Attribution } from "./source.js";
 import type { Zoomable } from "./zoomable.js";
 
 export type Placement =
@@ -17,19 +19,28 @@ export type MarkerAnchor =
 	| "bottom-left"
 	| "bottom-right";
 
-/** How a layer addresses its features: through the schema, or by raw name. */
+/**
+ * How a layer addresses its features: through the schema, by raw name, or as
+ * GeoJSON supplied with the declaration.
+ */
 export type LayerTarget =
 	| {
 			readonly mode: "canonical";
 			readonly kind: CanonicalKind;
 			readonly classes?: readonly string[];
 	  }
-	| { readonly mode: "raw"; readonly sourceLayer: string };
+	| { readonly mode: "raw"; readonly sourceLayer: string }
+	| { readonly mode: "data"; readonly data: GeoJsonInput };
 
 export interface LayerDeclaration {
 	readonly kind: "fill" | "line";
 	readonly target: LayerTarget;
 	readonly filter?: Filter;
+	/**
+	 * Paint just below the first layer targeting this canonical kind, wherever
+	 * this one is declared. Stays in place when no such layer exists.
+	 */
+	readonly below?: CanonicalKind;
 	readonly minZoom?: number;
 	readonly maxZoom?: number;
 	readonly fill?: Zoomable<Color>;
@@ -98,17 +109,33 @@ export interface MarkerDeclaration {
 	readonly markup: string;
 }
 
+export interface OverlayDeclaration {
+	readonly kind: "overlay";
+	/** Image corner the box is pinned to. */
+	readonly placement: Placement;
+	readonly size: readonly [width: number, height: number];
+	/** Distance from the pinned edges. A scalar applies to both axes. */
+	readonly inset?: number | readonly [x: number, y: number];
+	/** See `MarkerDeclaration.reserve`. Defaults to true. */
+	readonly reserve?: boolean;
+	/** Pre-rendered SVG markup for the overlay's children. */
+	readonly markup: string;
+}
+
 export interface AttributionDeclaration {
 	readonly kind: "attribution";
 	readonly placement?: Placement;
 	readonly color?: Color;
 	readonly fontSize?: number;
+	/** Appended after the source's attribution; never replaces it. */
+	readonly entries?: readonly Attribution[];
 }
 
 export type Declaration =
 	| LayerDeclaration
 	| LabelDeclaration
 	| MarkerDeclaration
+	| OverlayDeclaration
 	| AttributionDeclaration;
 
 /** Offset from a marker's box origin to the point that lands on the anchor. */
@@ -148,4 +175,30 @@ export function markerOrigin(
 	const [ox, oy] = declaration.offset ?? [0, 0];
 
 	return { x: at.x - dx + ox, y: at.y - dy + oy };
+}
+
+/**
+ * Where an overlay's box origin sits on the canvas. `shift` moves the box away
+ * from its vertical edge, to clear a band the box would otherwise cover.
+ */
+export function overlayOrigin(
+	declaration: OverlayDeclaration,
+	canvas: { readonly width: number; readonly height: number },
+	shift = 0,
+): { readonly x: number; readonly y: number } {
+	const { width, height } = canvas;
+	const [boxWidth, boxHeight] = declaration.size;
+	const [ix, iy] =
+		typeof declaration.inset === "number"
+			? [declaration.inset, declaration.inset]
+			: (declaration.inset ?? [0, 0]);
+
+	const x = declaration.placement.endsWith("right")
+		? width - boxWidth - ix
+		: ix;
+	const y = declaration.placement.startsWith("bottom")
+		? height - boxHeight - iy - shift
+		: iy + shift;
+
+	return { x, y };
 }

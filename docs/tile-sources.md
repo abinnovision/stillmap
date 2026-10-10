@@ -12,6 +12,14 @@ attribution at a default corner rather than removing it. It is drawn into the
 raster so it survives the file being copied, embedded, or re-hosted; the failure
 mode of an HTML overlay is that the image gets separated from its markup.
 
+A product that needs its own notice next to the source's, such as a data licence
+or a copyright line, passes it as `entries`. These are appended after the
+source's attribution and cannot replace it.
+
+```tsx
+<Attribution entries={[{ text: "Data: City of Hamburg, CC BY 4.0" }]} />
+```
+
 ## Rate limits and etiquette
 
 OpenFreeMap offers no SLA and is funded by donation. stillmap already retries

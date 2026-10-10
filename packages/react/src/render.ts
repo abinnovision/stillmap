@@ -1,6 +1,7 @@
 import {
 	StillmapError,
 	createWarningCollector,
+	geoJsonBounds,
 	renderScene,
 	toLngLat,
 	toPng,
@@ -11,7 +12,7 @@ import { walk } from "./walk.js";
 
 import type { MapProps } from "./map.js";
 import type { WalkResult } from "./walk.js";
-import type { LngLat, RenderWarning } from "@stillmap/core";
+import type { LayerDeclaration, LngLat, RenderWarning } from "@stillmap/core";
 import type { ReactElement } from "react";
 
 export interface RenderOptions {
@@ -35,7 +36,7 @@ export interface RenderedSvg {
 	readonly width: number;
 	readonly height: number;
 	/**
-	 * The view actually drawn. Under `fit="markers"` these are derived from the
+	 * The view actually drawn. Under `fit` these are derived from the
 	 * tree rather than declared, and are otherwise unobservable.
 	 */
 	readonly viewport: ResolvedViewport;
@@ -54,16 +55,27 @@ export interface ResolvedViewport {
 
 const DEFAULT_FIT_MAX_ZOOM = 17;
 
+/** Bounding corners of every GeoJSON layer, regardless of zoom range. */
+function dataExtent(layers: readonly LayerDeclaration[]): LngLat[] {
+	return layers.flatMap((layer) => {
+		const bounds =
+			layer.target.mode === "data" ? geoJsonBounds(layer.target.data) : null;
+
+		return bounds === null ? [] : [...bounds];
+	});
+}
+
 function resolveViewport(
 	props: MapProps,
 	walked: WalkResult,
 ): ResolvedViewport {
-	if (props.fit !== "markers") {
+	if (props.fit === undefined) {
 		return { center: toLngLat(props.center), zoom: props.zoom };
 	}
 
 	return fitMarkers({
 		markers: walked.markers,
+		...(props.fit === "data" ? { extent: dataExtent(walked.layers) } : {}),
 		width: props.width,
 		height: props.height,
 		maxZoom: props.maxZoom ?? DEFAULT_FIT_MAX_ZOOM,
@@ -114,6 +126,7 @@ export async function renderMap(
 		declarations: walked.layers,
 		labelDeclarations: walked.labels,
 		markers: walked.markers,
+		overlays: walked.overlays,
 		fonts: walked.fonts,
 		...(props.background === undefined ? {} : { background: props.background }),
 		...(props.locale === undefined ? {} : { locale: props.locale }),
@@ -124,6 +137,9 @@ export async function renderMap(
 		...(walked.attribution?.placement === undefined
 			? {}
 			: { attributionPlacement: walked.attribution.placement }),
+		...(walked.attribution?.entries === undefined
+			? {}
+			: { attribution: walked.attribution.entries }),
 		...(options.signal === undefined ? {} : { signal: options.signal }),
 		/*
 		 * renderScene keeps its own collector; forwarding here means each warning

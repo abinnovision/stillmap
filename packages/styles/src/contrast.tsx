@@ -14,10 +14,14 @@ import { PlaceLabelBlock } from "./labels.js";
 import { step } from "./ramp.js";
 
 import type { LabelScale } from "./labels.js";
+import type { StyleProps } from "./props.js";
 import type { Palette } from "@stillmap/core";
 import type { ReactNode } from "react";
 
-export interface ContrastProps {
+export interface ContrastProps extends Pick<
+	StyleProps,
+	"belowRoads" | "belowBuildings"
+> {
 	readonly palette: Palette;
 	readonly labels: boolean;
 	readonly fontFamily?: string;
@@ -98,6 +102,8 @@ export const Contrast = ({
 	palette,
 	labels,
 	fontFamily,
+	belowRoads,
+	belowBuildings,
 }: ContrastProps): ReactNode => {
 	const { geometry, label } = palette;
 
@@ -137,6 +143,7 @@ export const Contrast = ({
 				classes={["park", "garden", "cemetery", "pitch"]}
 				fill={geometry.park}
 			/>
+			{belowBuildings}
 			<Building fill={geometry.building} minZoom={14} />
 
 			<Water fill={geometry.water} />
@@ -166,6 +173,7 @@ export const Contrast = ({
 			 * narrower one. Document order is paint order, so the pair has to stay
 			 * adjacent.
 			 */}
+			{belowRoads}
 			<Road
 				classes={["motorway", "trunk"]}
 				stroke={geometry.roadCasing}

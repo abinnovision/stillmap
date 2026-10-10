@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.1](https://github.com/abinnovision/stillmap/compare/cli-v0.3.0...cli-v0.3.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* drop development export condition pointing at unpublished src ([#46](https://github.com/abinnovision/stillmap/issues/46)) ([0a98865](https://github.com/abinnovision/stillmap/commit/0a988656d2b8b964c543b8700970ef5db4bf3ee2))
+
+## [0.3.0](https://github.com/abinnovision/stillmap/compare/cli-v0.2.0...cli-v0.3.0) (2026-10-09)
+
+
+### Bug Fixes
+
+* **deps:** bump the production-dependencies group with 2 updates ([#24](https://github.com/abinnovision/stillmap/issues/24)) ([ed9ece0](https://github.com/abinnovision/stillmap/commit/ed9ece0d6e7d8c1029d4dac6c0fcb14853f02cc5))
+
 ## [0.2.0](https://github.com/abinnovision/stillmap/compare/cli-v0.1.0...cli-v0.2.0) (2026-09-02)
 
 

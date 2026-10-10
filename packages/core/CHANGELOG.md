@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.3.1](https://github.com/abinnovision/stillmap/compare/core-v0.3.0...core-v0.3.1) (2026-10-09)
+
+
+### Features
+
+* add Overlay component pinned to image corners ([#43](https://github.com/abinnovision/stillmap/issues/43)) ([1659c32](https://github.com/abinnovision/stillmap/commit/1659c32bbb49ceea76e603ff7cbe2b65168cf117))
+* **react:** allow appending product attribution entries ([#44](https://github.com/abinnovision/stillmap/issues/44)) ([ccc9b33](https://github.com/abinnovision/stillmap/commit/ccc9b33c96ecd0c29726d6e5fc7290f5e55d9747))
+
+## [0.3.0](https://github.com/abinnovision/stillmap/compare/core-v0.2.0...core-v0.3.0) (2026-10-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **labels:** metric-driven label placement with wrapping and annealing ([#14](https://github.com/abinnovision/stillmap/issues/14))
+
+### Features
+
+* add GeoJSON layers with below anchors and style slots ([#42](https://github.com/abinnovision/stillmap/issues/42)) ([5d486f9](https://github.com/abinnovision/stillmap/commit/5d486f92b594859f651aa2e4c1bd834817f2b085))
+* **labels:** metric-driven label placement with wrapping and annealing ([#14](https://github.com/abinnovision/stillmap/issues/14)) ([0ea396d](https://github.com/abinnovision/stillmap/commit/0ea396d4cd1c0471e14b5204702823b2133f93c7))
+
+
+### Bug Fixes
+
+* **core:** read opentype.js metrics from its ESM build ([#16](https://github.com/abinnovision/stillmap/issues/16)) ([22b03ae](https://github.com/abinnovision/stillmap/commit/22b03ae931746c7829b5d15117fbb301df667496))
+
 ## [0.2.0](https://github.com/abinnovision/stillmap/compare/core-v0.1.0...core-v0.2.0) (2026-09-02)
 
 

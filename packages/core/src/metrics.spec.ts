@@ -95,6 +95,14 @@ describe("loadTextMeasurer", () => {
 		);
 	});
 
+	it("measures without a warning collector", async () => {
+		const measure = await loadTextMeasurer([
+			{ family: "Fixture", file: fontFile },
+		]);
+
+		expect(measure("AB", STYLE).width).toBeCloseTo(13, 5);
+	});
+
 	it("falls back to the estimate for an unknown family", async () => {
 		const measure = await loadTextMeasurer(
 			[{ family: "Fixture", file: fontFile }],

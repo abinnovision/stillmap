@@ -1,6 +1,7 @@
 import { createWarningCollector } from "@stillmap/core";
 import { describe, expect, it } from "vitest";
 
+import { Overlay } from "./overlay.js";
 import { defineComponent } from "./registry.js";
 import { walk } from "./walk.js";
 
@@ -20,7 +21,7 @@ function layersOf(node: ReactNode): readonly string[] {
 	const result = walk(node, createWarningCollector({}));
 
 	return result.layers.map((layer) =>
-		layer.target.mode === "raw" ? layer.target.sourceLayer : layer.target.kind,
+		layer.target.mode === "raw" ? layer.target.sourceLayer : layer.target.mode,
 	);
 }
 
@@ -90,6 +91,18 @@ describe("walk", () => {
 		);
 
 		expect(layersOf(<Named name="passed" />)).toEqual(["passed"]);
+	});
+
+	it("collects an overlay separately from markers", () => {
+		const result = walk(
+			<Overlay placement="top-left" size={[10, 10]}>
+				<circle />
+			</Overlay>,
+			createWarningCollector({}),
+		);
+
+		expect(result.overlays).toHaveLength(1);
+		expect(result.markers).toEqual([]);
 	});
 
 	it("warns about a host element it cannot interpret", () => {

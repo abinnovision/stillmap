@@ -4,6 +4,7 @@ import { resolveZoomable } from "./zoomable.js";
 import type { LayerDeclaration } from "./declaration.js";
 import type { DecodedFeature } from "./decode.js";
 import type { Color, Filter } from "./filter.js";
+import type { GeoJsonInput } from "./geojson.js";
 import type { SourceLayerBinding, TileSchema } from "./source.js";
 import type { WarningCollector } from "./warnings.js";
 
@@ -41,6 +42,12 @@ export interface ResolvedStyle {
 	readonly rules: readonly PaintRule[];
 	/** Distinct source layers to decode. Anything else is skipped. */
 	readonly sourceLayers: readonly string[];
+	/** GeoJSON to project, each tagged with the synthetic layer its rule uses. */
+	readonly dataLayers: readonly {
+		readonly sourceLayer: string;
+		readonly kind: "fill" | "line";
+		readonly data: GeoJsonInput;
+	}[];
 }
 
 function combineFilters(
@@ -132,19 +139,93 @@ function toRule(args: ToRuleArgs): PaintRule {
 }
 
 /**
+ * Moves each declaration with a `below` anchor to just before the first
+ * unanchored declaration targeting that kind. Anchors resolve over every
+ * declaration regardless of zoom, so placement is the same at every zoom.
+ */
+export function orderDeclarations(
+	declarations: readonly LayerDeclaration[],
+	warn: WarningCollector,
+): readonly LayerDeclaration[] {
+	const anchors = new Set(
+		declarations.flatMap((d) =>
+			d.below === undefined && d.target.mode === "canonical"
+				? [d.target.kind]
+				: [],
+		),
+	);
+	const ordered: LayerDeclaration[] = [];
+	const reached = new Set<string>();
+
+	for (const declaration of declarations) {
+		const { below, target } = declaration;
+
+		if (below !== undefined) {
+			if (anchors.has(below)) {
+				continue;
+			}
+
+			warn.warn(
+				"LAYER_ANCHOR_MISSING",
+				`No layer of kind "${below}" to paint below; kept in place.`,
+				{ below },
+			);
+		}
+
+		if (
+			below === undefined &&
+			target.mode === "canonical" &&
+			!reached.has(target.kind)
+		) {
+			reached.add(target.kind);
+			ordered.push(...declarations.filter((d) => d.below === target.kind));
+		}
+
+		ordered.push(declaration);
+	}
+
+	return ordered;
+}
+
+/**
  * Turns declarations into flat paint rules at one fixed zoom. Every zoom
  * function collapses to a literal here, exactly once per render.
  */
 export function resolveStyle(args: ResolveStyleArgs): ResolvedStyle {
 	const rules: PaintRule[] = [];
 	const sourceLayers = new Set<string>();
+	const dataLayers: ResolvedStyle["dataLayers"][number][] = [];
 	let order = 0;
 
-	for (const declaration of args.declarations) {
+	for (const declaration of orderDeclarations(args.declarations, args.warn)) {
 		if (
 			args.zoom < (declaration.minZoom ?? -Infinity) ||
 			args.zoom > (declaration.maxZoom ?? Infinity)
 		) {
+			continue;
+		}
+
+		/*
+		 * A unique synthetic layer per declaration, so no tile feature and no
+		 * other data layer can ever match its rule.
+		 */
+		if (declaration.target.mode === "data") {
+			const sourceLayer = `data:${String(order)}`;
+
+			dataLayers.push({
+				sourceLayer,
+				kind: declaration.kind,
+				data: declaration.target.data,
+			});
+			rules.push(
+				toRule({
+					declaration,
+					binding: { sourceLayer },
+					order,
+					zoom: args.zoom,
+				}),
+			);
+			order++;
 			continue;
 		}
 
@@ -170,7 +251,7 @@ export function resolveStyle(args: ResolveStyleArgs): ResolvedStyle {
 		order++;
 	}
 
-	return { rules, sourceLayers: [...sourceLayers] };
+	return { rules, sourceLayers: [...sourceLayers], dataLayers };
 }
 
 /**

@@ -105,6 +105,8 @@ export const Neutral = ({
 	palette,
 	labels = true,
 	fontFamily,
+	belowRoads,
+	belowBuildings,
 }: StyleProps = {}): ReactNode => {
 	const { geometry, label } = mergePalette(NEUTRAL, palette);
 
@@ -129,6 +131,7 @@ export const Neutral = ({
 				width={0.9}
 				minZoom={13}
 			/>
+			{belowBuildings}
 			<Building fill={geometry.building} minZoom={15} />
 			<Boundary
 				classes={["country", "region"]}
@@ -144,6 +147,7 @@ export const Neutral = ({
 				minZoom={15}
 			/>
 			<Rail stroke={geometry.rail} width={0.9} dash={[5, 4]} minZoom={13} />
+			{belowRoads}
 			<Road
 				classes={["minor", "service"]}
 				stroke={geometry.road}

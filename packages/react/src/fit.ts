@@ -10,6 +10,11 @@ import type { LngLat, MarkerDeclaration } from "@stillmap/core";
 
 export interface FitMarkersArgs {
 	readonly markers: readonly MarkerDeclaration[];
+	/**
+	 * Further positions to keep in view, with no box of their own. Present
+	 * under `fit="data"`, where it may stand in for markers entirely.
+	 */
+	readonly extent?: readonly LngLat[];
 	readonly width: number;
 	readonly height: number;
 	readonly maxZoom: number;
@@ -54,7 +59,14 @@ function paddingOf(
  * folds into the padding rather than needing an iterative solve.
  */
 export function fitMarkers(args: FitMarkersArgs): FittedViewport {
-	if (args.markers.length === 0) {
+	if (args.extent !== undefined) {
+		if (args.markers.length === 0 && args.extent.length === 0) {
+			throw new StillmapError(
+				"FIT_WITHOUT_DATA",
+				'fit="data" needs at least one marker or GeoJSON layer in the tree.',
+			);
+		}
+	} else if (args.markers.length === 0) {
 		throw new StillmapError(
 			"FIT_WITHOUT_MARKERS",
 			'fit="markers" needs at least one marker in the tree.',
@@ -82,6 +94,15 @@ export function fitMarkers(args: FitMarkersArgs): FittedViewport {
 		overhang.right = Math.max(overhang.right, marker.size[0] - dx + pad);
 		overhang.top = Math.max(overhang.top, dy + pad);
 		overhang.bottom = Math.max(overhang.bottom, marker.size[1] - dy + pad);
+	}
+
+	for (const position of args.extent ?? []) {
+		const point = lngLatToWorld(position, PROBE_ZOOM);
+
+		minX = Math.min(minX, point.x);
+		minY = Math.min(minY, point.y);
+		maxX = Math.max(maxX, point.x);
+		maxY = Math.max(maxY, point.y);
 	}
 
 	const [padTop, padRight, padBottom, padLeft] = paddingOf(args.padding);
