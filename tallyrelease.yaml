@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://cdn.jsdelivr.net/npm/@tallyrelease/cli@0/dist/tallyrelease.schema.json
+plugins:
+  node: {}
+
+defaults:
+  # Matches the existing tags
+  tagFormat: "{id}-v{version}"
+  initialVersion: 0.1.0
+
+# Mirrors app-stack's prerelease-channel.
+branches:
+  - name: main
+    line: default
+    channel: beta
+
+units:
+  packages/core: { release: true }
+  packages/sources: { release: true }
+  packages/react: { release: true }
+  packages/serve: { release: true }
+  packages/styles: { release: true }
+  packages/cli: { id: cli, release: true }
+
+# Mirrors release-please linked-versions.
+groups:
+  stillmap:
+    units: [core, sources, react, serve, styles, cli]
+
+# Changes here rebuild every unit (added to the node plugin defaults:
+# yarn.lock, .yarnrc.yml, root package.json, tsconfig*.json, turbo.json).
+globalInputs:
+  - .tool-versions
+
+ignore:
+  - "*.md"
+  - .github/**
+  - .husky/**
+  - .devcontainer/**
+  - .codesandbox/**
+  - .editorconfig
+  - .gitattributes
