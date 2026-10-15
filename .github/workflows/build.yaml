@@ -26,6 +26,8 @@ jobs:
     with:
       prerelease-channel: "beta"
       test-types: "unit,integration"
+      build-selection: "affected"
+      tallyrelease: "shadow"
 
   # The npm trusted publishers are bound to this file name; keep it build.yaml.
   publish-npm:
