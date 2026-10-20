@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.2](https://github.com/abinnovision/stillmap/compare/core-v0.3.1...core-v0.3.2) (2026-10-20)
+
+
+### Performance Improvements
+
+* **core:** rasterise PNGs off the main thread with a faster encoder ([#61](https://github.com/abinnovision/stillmap/issues/61)) ([8429184](https://github.com/abinnovision/stillmap/commit/842918451f6455405d27f186ad587b3ad00d3e34))
+* **core:** speed up label annealing and path building ([#56](https://github.com/abinnovision/stillmap/issues/56)) ([c07d312](https://github.com/abinnovision/stillmap/commit/c07d312aaa4c33b54be510889aca47bd054bba61))
+
 ## [0.3.1](https://github.com/abinnovision/stillmap/compare/core-v0.3.0...core-v0.3.1) (2026-10-09)
 
 

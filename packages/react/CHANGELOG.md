@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/abinnovision/stillmap/compare/react-v0.3.1...react-v0.3.2) (2026-10-20)
+
+
+### Bug Fixes
+
+* **deps:** bump the production-dependencies group with 3 updates ([#49](https://github.com/abinnovision/stillmap/issues/49)) ([acad9f2](https://github.com/abinnovision/stillmap/commit/acad9f23b411bad336d3a813a7578b8d62b4b693))
+
 ## [0.3.1](https://github.com/abinnovision/stillmap/compare/react-v0.3.0...react-v0.3.1) (2026-10-09)
 
 
