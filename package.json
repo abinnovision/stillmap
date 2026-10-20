@@ -19,6 +19,9 @@
 	],
 	"scripts": {
 		"bench": "yarn workspace @stillmap/core run bench",
+		"bench:baseline": "yarn workspace @stillmap/core run bench:baseline",
+		"bench:compare": "yarn workspace @stillmap/core run bench:compare",
+		"bench:memory": "yarn workspace @stillmap/core run bench:memory",
 		"build": "yarn turbo run build",
 		"check": "yarn format:check & yarn sort:check & turbo run check",
 		"clean": "rimraf -g -I 'coverage/' '{examples,packages}/*/{coverage,dist,.turbo}'",

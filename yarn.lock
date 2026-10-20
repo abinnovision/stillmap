@@ -1734,6 +1734,7 @@ __metadata:
     opentype.js: "npm:^2.0.0"
     pbf: "npm:^5.1.2"
     prettier: "npm:^3.9.5"
+    tsx: "npm:^4.20.6"
     typescript: "npm:^6.0.3"
     vitest: "npm:^4.1.10"
   peerDependencies:
