@@ -101,7 +101,7 @@ URL, not that the code minting it was right: a bug that puts user input into
 
 Signing also does not bound _how often_ a valid URL is fetched — the URLs are in
 your page source. `maxConcurrentRenders` (default 4) is what stops a burst of
-cold keys from blocking the event loop, and `store` is what stops the work
+cold keys from exhausting CPU and memory, and `store` is what stops the work
 repeating. `store` defaults to no caching, which is fine for trying this out and
 is an unbounded render proxy in production.
 

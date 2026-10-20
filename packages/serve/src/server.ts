@@ -71,10 +71,11 @@ export interface MapServerConfig<
 	 */
 	readonly epoch?: string;
 	/**
-	 * How many renders may run at once. Rasterising is a synchronous native
-	 * call, so each one blocks the event loop and holds a full pixmap; without a
-	 * bound, a burst of cold keys is an outage rather than a slow page. Default
-	 * 4. Requests above it wait rather than fail.
+	 * How many renders may run at once. Each one builds its scene on the event
+	 * loop and holds a full pixmap while it rasterises on the libuv threadpool;
+	 * without a bound, a burst of cold keys is an outage rather than a slow page.
+	 * Default 4, the threadpool's default size. Requests above it wait rather
+	 * than fail.
 	 */
 	readonly maxConcurrentRenders?: number;
 	/** Shared-cache lifetime for URLs with no version. Default one day. */
