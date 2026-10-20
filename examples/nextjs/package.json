@@ -28,9 +28,9 @@
 		"@stillmap/react": "workspace:^",
 		"@stillmap/serve": "workspace:^",
 		"@stillmap/sources": "workspace:^",
-		"next": "^16.4.0",
-		"react": "^19.3.0",
-		"react-dom": "^19.3.0"
+		"next": "^16.4.1",
+		"react": "^19.3.1",
+		"react-dom": "^19.3.1"
 	},
 	"devDependencies": {
 		"@abinnovision/eslint-config-base": "^3.4.2",
