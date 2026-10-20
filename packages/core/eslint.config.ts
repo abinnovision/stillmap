@@ -17,5 +17,9 @@ export default defineConfig([
 		},
 	},
 	{ files: ["*.{c,m,}{t,j}s"], extends: [configFiles] },
+	{
+		files: ["bench/**/*.ts"],
+		rules: { "import/no-extraneous-dependencies": "off" },
+	},
 	globalIgnores(["dist"]),
 ]);
