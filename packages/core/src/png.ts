@@ -1,12 +1,13 @@
 import { StillmapError } from "./errors.js";
 import { assertFontCoversText, assertFontsExist } from "./fonts.js";
+import { encodePng } from "./png-encode.js";
 
 import type { FontFace } from "./fonts.js";
 /*
  * Type-only import of an optional peer. Erased at build time, so it never
  * becomes a runtime require and core stays installable without resvg.
  */
-import type { Resvg as ResvgClass } from "@resvg/resvg-js";
+import type { renderAsync as RenderAsync } from "@resvg/resvg-js";
 
 export interface ToPngArgs {
 	readonly svg: string;
@@ -19,16 +20,17 @@ export interface ToPngArgs {
 /**
  * Rasterises an SVG string. `@resvg/resvg-js` is an optional peer dependency, so
  * it is imported lazily and its absence is reported as an actionable error
- * rather than a module resolution failure.
+ * rather than a module resolution failure. Rasterisation and compression run on
+ * the libuv threadpool; only scanline preparation runs on the main thread.
  */
 export async function toPng(args: ToPngArgs): Promise<Buffer> {
 	assertFontsExist(args.fonts);
 	assertFontCoversText(args.svg, args.fonts);
 
-	let Resvg: typeof ResvgClass;
+	let renderAsync: typeof RenderAsync;
 
 	try {
-		({ Resvg } = await import("@resvg/resvg-js"));
+		({ renderAsync } = await import("@resvg/resvg-js"));
 	} catch (error) {
 		throw new StillmapError(
 			"PNG_BACKEND_MISSING",
@@ -39,7 +41,7 @@ export async function toPng(args: ToPngArgs): Promise<Buffer> {
 
 	const first = args.fonts[0];
 
-	const renderer = new Resvg(args.svg, {
+	const image = await renderAsync(args.svg, {
 		fitTo: { mode: "width", value: args.width * (args.scale ?? 1) },
 		font: {
 			/*
@@ -57,5 +59,5 @@ export async function toPng(args: ToPngArgs): Promise<Buffer> {
 		},
 	});
 
-	return renderer.render().asPng();
+	return await encodePng(image.pixels, image.width, image.height);
 }
