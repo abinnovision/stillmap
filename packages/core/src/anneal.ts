@@ -103,6 +103,16 @@ export function anneal(args: AnnealArgs): readonly number[] {
 		}
 	}
 
+	// Overlap accumulator state, hoisted so a cost query allocates nothing.
+	let self = -1;
+	let subject: Box;
+	let cost = 0;
+	const addOverlap = (other: number, box: Box): void => {
+		if (other !== self) {
+			cost += OVERLAP_WEIGHT * overlapFraction(subject, box);
+		}
+	};
+
 	/** Cost the label at `uid` contributes in `state`, given the grid. */
 	const costOf = (uid: number, state: number): number => {
 		const label = labels[uid] as AnnealLabel;
@@ -112,15 +122,11 @@ export function anneal(args: AnnealArgs): readonly number[] {
 		}
 
 		const position = label.positions[state] as LabelPosition;
-		let cost = position.penalty;
 
-		for (const other of grid.query(position.box)) {
-			if (other !== uid) {
-				cost +=
-					OVERLAP_WEIGHT *
-					overlapFraction(position.box, grid.boxOf(other) as Box);
-			}
-		}
+		self = uid;
+		subject = position.box;
+		cost = position.penalty;
+		grid.forEachOverlap(subject, addOverlap);
 
 		return cost;
 	};
