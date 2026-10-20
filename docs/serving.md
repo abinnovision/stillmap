@@ -243,9 +243,10 @@ is dropped as soon as the promise settles including on rejection, and it is
 per-process.
 
 It does nothing for **many requests for many maps**, which is what a CDN purge
-or an epoch bump actually produces. Rasterising is a synchronous native call, so
-each render blocks the event loop and holds a full pixmap; unbounded, a burst of
-cold keys is an outage rather than a slow page. `maxConcurrentRenders` (default 4) bounds it, and requests above the bound wait rather than fail.
+or an epoch bump actually produces. Each render holds the main thread while
+building its scene, then a threadpool thread and a full pixmap while
+rasterising; unbounded, a burst of cold keys is an outage rather than a slow
+page. `maxConcurrentRenders` (default 4) bounds it, and requests above the bound wait rather than fail.
 
 Signed URLs do not help here. They are in your page source, so anyone can
 collect them; signing bounds which renders are _possible_, and only the cache
@@ -346,19 +347,21 @@ Measure your own maps with `yarn bench` and `yarn bench:memory`.
 
 | Step                                   | Time        |
 | -------------------------------------- | ----------- |
-| `renderScene` (SVG), 1200x300          | about 13 ms |
-| `renderScene`, dense labels, 1200x1200 | about 16 ms |
-| `toPng`, scale 1                       | about 23 ms |
-| `toPng`, scale 2                       | about 50 ms |
-| SVG and PNG, sequential, scale 1       | about 38 ms |
+| `renderScene` (SVG), 1200x300          | about 17 ms |
+| `renderScene`, dense labels, 1200x1200 | about 19 ms |
+| `toPng`, scale 1                       | about 31 ms |
+| `toPng`, scale 2                       | about 60 ms |
+| SVG and PNG, sequential, scale 1       | about 48 ms |
 
 Label annealing dominates dense scenes, and decoding tiles is roughly 30 to 45%
 of a warm render. PNG cost grows with output pixels, so `scale` and the
 dimensions you allow in `readNumber` are the main levers.
 
-At 38 ms, one process on one core manages roughly 25 renders per second at this
-size. Cache hits cost far less, which is why the store matters more than any
-tuning of the render path.
+Only `renderScene` and a few milliseconds of PNG preparation hold the main
+thread; rasterisation and compression do not. One render at a time manages
+roughly 20 per second at this size, and four in flight about 50. Cache hits cost
+far less, which is why the store matters more than any tuning of the render
+path.
 
 ### Memory
 
@@ -380,13 +383,21 @@ process baseline + tile cache + maxConcurrentRenders x per-render working set
 
 Start with 512 MB per process and adjust from measurements.
 
-### One process is about one core
+### One process is a few cores
 
-Rendering is CPU-bound and runs on the main thread, and PNG rasterisation is a
-synchronous native call. `maxConcurrentRenders` therefore bounds memory and
-queueing, not parallelism. Keep it small (the default is 4) and scale by running
-more processes, about one per core: Node's `cluster` module, or several
-containers or replicas behind a load balancer.
+Scene building (`renderScene`) is CPU-bound and runs on the main thread. PNG
+rasterisation and compression run on the libuv threadpool, so one process can
+keep several cores busy during the PNG stage without blocking the event loop.
+The pool has 4 threads by default, set by `UV_THREADPOOL_SIZE`, and it is shared
+with `fs`, `zlib` and `dns`.
+
+`maxConcurrentRenders` bounds memory and queueing, and with it how many PNG
+stages run in parallel. The default of 4 matches the default pool size. Raising
+it only helps with a larger pool, for example `UV_THREADPOOL_SIZE=8` set before
+the process starts; otherwise extra renders wait for a thread. Past that, the
+main thread is the limit, so scale by running more processes: Node's `cluster`
+module, or several containers or replicas behind a load balancer. A process
+uses more than one core, so plan for fewer processes than cores.
 
 Requests above the bound wait in an unbounded queue with no timeout. Set a
 timeout at the load balancer so a backlog turns into an error instead of a
@@ -406,10 +417,9 @@ need cleaning up.
 
 ### Not built in yet
 
-- Rasterisation off the main thread.
 - A tile cache bounded by bytes.
 - A queue cap or timeout on the render gate.
-- A worker pool for using several cores from one process.
+- A worker pool for running `renderScene` on several cores from one process.
 
 ## Next.js
 
