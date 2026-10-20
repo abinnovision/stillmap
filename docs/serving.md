@@ -336,6 +336,81 @@ const redisStore = (client: Redis): OutputStore => ({
 });
 ```
 
+## Sizing and scaling
+
+The figures below are indicative. They come from an 8-vCPU x86_64 Linux VM on
+Node 24, rendering a 1200x300 banner from fixture tiles with a warm tile cache.
+Measure your own maps with `yarn bench` and `yarn bench:memory`.
+
+### What a render costs
+
+| Step                                   | Time        |
+| -------------------------------------- | ----------- |
+| `renderScene` (SVG), 1200x300          | about 13 ms |
+| `renderScene`, dense labels, 1200x1200 | about 16 ms |
+| `toPng`, scale 1                       | about 23 ms |
+| `toPng`, scale 2                       | about 50 ms |
+| SVG and PNG, sequential, scale 1       | about 38 ms |
+
+Label annealing dominates dense scenes, and decoding tiles is roughly 30 to 45%
+of a warm render. PNG cost grows with output pixels, so `scale` and the
+dimensions you allow in `readNumber` are the main levers.
+
+At 38 ms, one process on one core manages roughly 25 renders per second at this
+size. Cache hits cost far less, which is why the store matters more than any
+tuning of the render path.
+
+### Memory
+
+On the same setup a process sat at about 160 MB RSS after warm-up and peaked at
+about 325 MB under sustained rendering. Heap retained per render after garbage
+collection is negligible (about 0.3 MB over 50 renders). The peak heap, about
+140 MB, is short-lived garbage, so give V8 headroom instead of counting it per
+render.
+
+The tile cache is bounded by entry count (150), not bytes. A full cache held
+about 22 MB for the fixture tiles. Real tiles vary, roughly 50 to 500 KB each,
+so expect tens of MB and up to about 75 MB.
+
+A rough budget per process is:
+
+```
+process baseline + tile cache + maxConcurrentRenders x per-render working set
+```
+
+Start with 512 MB per process and adjust from measurements.
+
+### One process is about one core
+
+Rendering is CPU-bound and runs on the main thread, and PNG rasterisation is a
+synchronous native call. `maxConcurrentRenders` therefore bounds memory and
+queueing, not parallelism. Keep it small (the default is 4) and scale by running
+more processes, about one per core: Node's `cluster` module, or several
+containers or replicas behind a load balancer.
+
+Requests above the bound wait in an unbounded queue with no timeout. Set a
+timeout at the load balancer so a backlog turns into an error instead of a
+growing delay.
+
+### Several processes
+
+In-flight coalescing only collapses identical renders inside one process.
+Across processes, share the output store: `fileStore` on a shared volume, or
+`cacheStore` where a Cache API exists. Put a CDN in front as well. URLs are
+signed and versioned, so the responses are cacheable.
+
+None of the stores evict. Plan retention outside stillmap, for example a cron
+cleanup of the `fileStore` directory or a lifecycle rule on a bucket. Degraded
+renders are served `no-store` and never written to the store, so they do not
+need cleaning up.
+
+### Not built in yet
+
+- Rasterisation off the main thread.
+- A tile cache bounded by bytes.
+- A queue cap or timeout on the render gate.
+- A worker pool for using several cores from one process.
+
 ## Next.js
 
 Three things are not optional, and all three are about the native addon and the
