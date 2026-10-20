@@ -428,26 +428,26 @@ export async function renderScene(
 			continue;
 		}
 
-		features.push(
-			...decodeTile({
-				buffer,
-				coord,
-				tileDisplaySize: cover.tileDisplaySize,
-				sourceLayers: wanted,
-			}),
-		);
+		for (const feature of decodeTile({
+			buffer,
+			coord,
+			tileDisplaySize: cover.tileDisplaySize,
+			sourceLayers: wanted,
+		})) {
+			features.push(feature);
+		}
 	}
 
 	for (const layer of dataLayers) {
-		features.push(
-			...projectGeoJson({
-				data: layer.data,
-				kind: layer.kind,
-				layer: layer.sourceLayer,
-				zoom,
-				warn,
-			}),
-		);
+		for (const feature of projectGeoJson({
+			data: layer.data,
+			kind: layer.kind,
+			layer: layer.sourceLayer,
+			zoom,
+			warn,
+		})) {
+			features.push(feature);
+		}
 	}
 
 	const paths = buildPaths({

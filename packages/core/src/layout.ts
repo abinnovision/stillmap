@@ -72,7 +72,8 @@ function ringToPath(
 		return "";
 	}
 
-	const parts: string[] = [];
+	let path = "";
+	let count = 0;
 	let previousX: string | null = null;
 	let previousY: string | null = null;
 
@@ -84,16 +85,17 @@ function ringToPath(
 			continue;
 		}
 
-		parts.push(`${parts.length === 0 ? "M" : "L"}${x} ${y}`);
+		path += `${count === 0 ? "M" : "L"}${x} ${y}`;
+		count += 1;
 		previousX = x;
 		previousY = y;
 	}
 
-	if (parts.length < 2) {
+	if (count < 2) {
 		return "";
 	}
 
-	return close ? `${parts.join("")}Z` : parts.join("");
+	return close ? `${path}Z` : path;
 }
 
 /**
@@ -103,6 +105,11 @@ function ringToPath(
  */
 export function buildPaths(args: BuildPathsArgs): readonly PathGroup[] {
 	const byRule = new Map<PaintRule, string[]>();
+	const viewport = {
+		bounds: args.bounds,
+		width: args.width,
+		height: args.height,
+	};
 
 	for (const feature of args.features) {
 		const rule = resolveRule(feature, args.rules);
@@ -115,13 +122,7 @@ export function buildPaths(args: BuildPathsArgs): readonly PathGroup[] {
 		const close = feature.type === 3;
 
 		for (const ring of feature.geometry) {
-			if (
-				!intersectsViewport(ring, {
-					bounds: args.bounds,
-					width: args.width,
-					height: args.height,
-				})
-			) {
+			if (!intersectsViewport(ring, viewport)) {
 				continue;
 			}
 
