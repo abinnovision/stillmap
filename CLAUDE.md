@@ -29,14 +29,21 @@ imports something above it, and the three top packages never import each other.
 
 ## Commands
 
-| Command                                       | Effect                             |
-| --------------------------------------------- | ---------------------------------- |
-| `yarn install`                                | Install. Never use npm or pnpm.    |
-| `yarn build`                                  | Build every package through turbo. |
-| `yarn check`                                  | Format, lint, and typecheck.       |
-| `yarn fix`                                    | Auto-fix formatting and lint.      |
-| `yarn test-unit`                              | Every unit test, with coverage.    |
-| `yarn workspace @stillmap/core run test-unit` | One package only.                  |
+| Command                                       | Effect                              |
+| --------------------------------------------- | ----------------------------------- |
+| `yarn install`                                | Install. Never use npm or pnpm.     |
+| `yarn build`                                  | Build every package through turbo.  |
+| `yarn check`                                  | Format, lint, and typecheck.        |
+| `yarn fix`                                    | Auto-fix formatting and lint.       |
+| `yarn test-unit`                              | Every unit test, with coverage.     |
+| `yarn workspace @stillmap/core run test-unit` | One package only.                   |
+| `yarn bench`                                  | Run the core benchmarks.            |
+| `yarn bench:baseline`                         | Save a local benchmark baseline.    |
+| `yarn bench:compare`                          | Compare benchmarks to the baseline. |
+| `yarn bench:memory`                           | Print heap and RSS over 50 renders. |
+
+Benchmark baselines are per-machine and gitignored. The bench fixtures only
+cover the z13 Hamburg tiles, so most of the dense canvas is empty on purpose.
 
 Requires corepack (`corepack enable`) so `yarn` resolves to the 4.18.0 pinned in
 `packageManager`.
