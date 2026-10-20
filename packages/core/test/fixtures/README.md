@@ -63,3 +63,9 @@ Refreshing invalidates the golden SVGs. Regenerate them with
 `UPDATE_GOLDEN=1 yarn test-unit`, then **rasterise and look at them**. Reading
 the markup is not enough: an empty render is a few hundred bytes of valid SVG
 and looks fine in a diff.
+
+## Fonts
+
+`Inter-subset.ttf` is the same subset of Inter used by the other packages'
+test fixtures. The benchmarks in `bench/` rasterise with it. Inter is licensed
+under the SIL Open Font License 1.1.

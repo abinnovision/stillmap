@@ -34,19 +34,20 @@
 		"dist"
 	],
 	"scripts": {
+		"bench": "vitest bench --run --config vitest.config.ts",
 		"build": "tsc --build tsconfig.build.json",
-		"format:check": "prettier --check '{{src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}'",
-		"format:fix": "prettier --write '{{src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}'",
-		"lint:check": "eslint '{{src,test}/**/*,*}.{t,j}s{,x}'",
-		"lint:fix": "eslint '{{src,test}/**/*,*}.{t,j}s{,x}' --fix",
+		"format:check": "prettier --check '{{bench,src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}'",
+		"format:fix": "prettier --write '{{bench,src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}'",
+		"lint:check": "eslint '{{bench,src,test}/**/*,*}.{t,j}s{,x}'",
+		"lint:fix": "eslint '{{bench,src,test}/**/*,*}.{t,j}s{,x}' --fix",
 		"test-integration": "vitest --run --config vitest.integration.config.ts --project='*#integration'",
 		"test-unit": "vitest --run --coverage --config vitest.config.ts --project='*#unit'",
 		"test-unit:watch": "vitest --config vitest.config.ts --project='*#unit'",
 		"typecheck": "tsc -p tsconfig.json"
 	},
 	"lint-staged": {
-		"{{src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}": "prettier --write",
-		"{{src,test}/**/*,*}.{t,j}s{,x}": "eslint --fix"
+		"{{bench,src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}": "prettier --write",
+		"{{bench,src,test}/**/*,*}.{t,j}s{,x}": "eslint --fix"
 	},
 	"prettier": "@abinnovision/prettier-config",
 	"dependencies": {
