@@ -15,7 +15,7 @@ examples/*/next-env.d.ts
 coverage/
 
 # Local benchmark baseline (per machine)
-packages/core/bench/.baseline.json
+packages/core/bench/.baseline/
 
 # IDE
 .idea/

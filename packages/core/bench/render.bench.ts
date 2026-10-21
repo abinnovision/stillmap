@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
-import { bench, describe } from "vitest";
+import { test } from "vitest";
 
+import { run } from "./baseline.js";
 import { toPng } from "../src/png.js";
 import { renderScene } from "../src/render.js";
 import { createTileCache } from "../src/tiles.js";
@@ -83,30 +84,28 @@ await renderScene({ ...dense, cache: warm });
 
 const { svg } = await renderScene({ ...base, cache: warm });
 
-describe("renderScene", () => {
-	bench(
-		"warm cache",
-		async () => {
-			await renderScene({ ...base, cache: warm });
-		},
-		options,
-	);
-
-	bench(
-		"dense labels, warm cache",
-		async () => {
-			await renderScene({ ...dense, cache: warm });
+test("renderScene", async ({ bench }) => {
+	await run(
+		bench,
+		{
+			"warm cache": async () => {
+				await renderScene({ ...base, cache: warm });
+			},
+			"dense labels, warm cache": async () => {
+				await renderScene({ ...dense, cache: warm });
+			},
 		},
 		options,
 	);
 });
 
-describe("toPng", () => {
-	bench("scale 1", async () => {
-		await toPng({ svg, width: 1200, scale: 1, fonts });
-	});
-
-	bench("scale 2", async () => {
-		await toPng({ svg, width: 1200, scale: 2, fonts });
+test("toPng", async ({ bench }) => {
+	await run(bench, {
+		"scale 1": async () => {
+			await toPng({ svg, width: 1200, scale: 1, fonts });
+		},
+		"scale 2": async () => {
+			await toPng({ svg, width: 1200, scale: 2, fonts });
+		},
 	});
 });

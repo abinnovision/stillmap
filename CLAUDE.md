@@ -42,8 +42,9 @@ imports something above it, and the three top packages never import each other.
 | `yarn bench:compare`                          | Compare benchmarks to the baseline. |
 | `yarn bench:memory`                           | Print heap and RSS over 50 renders. |
 
-Benchmark baselines are per-machine and gitignored. The bench fixtures only
-cover the z13 Hamburg tiles, so most of the dense canvas is empty on purpose.
+Benchmark baselines are per-machine and gitignored, one file per case under
+`packages/core/bench/.baseline/`. The bench fixtures only cover the z13 Hamburg
+tiles, so most of the dense canvas is empty on purpose.
 
 Requires corepack (`corepack enable`) so `yarn` resolves to the 4.18.0 pinned in
 `packageManager`.
