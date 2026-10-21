@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.2](https://github.com/abinnovision/stillmap/compare/sources-v0.3.1...sources-v0.3.2) (2026-10-21)
+
+
+### Miscellaneous Chores
+
+* **sources:** Synchronize stillmap versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @stillmap/core bumped to 0.3.2
+
 ## [0.3.1](https://github.com/abinnovision/stillmap/compare/sources-v0.3.0...sources-v0.3.1) (2026-10-09)
 
 
