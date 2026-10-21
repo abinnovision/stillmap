@@ -12,6 +12,9 @@ updates:
     commit-message:
       prefix: "fix(deps)"
       prefix-development: "build(deps)"
+    ignore:
+      - dependency-name: typescript
+        versions: [">=7"]
     cooldown:
       default-days: 5
     groups:
