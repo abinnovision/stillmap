@@ -13,7 +13,7 @@ export default defineConfig({
 		],
 		coverage: {
 			provider: "v8",
-			include: ["packages/*/src/**/*.{ts,tsx}"],
+			include: ["src/**/*.{ts,tsx}"],
 			reporter: [["lcovonly", { projectRoot: "./" }], "text"],
 		},
 	},

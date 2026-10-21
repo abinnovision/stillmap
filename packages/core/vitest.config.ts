@@ -5,6 +5,9 @@ export default defineProject({
 		name: "@stillmap/core#unit",
 		include: ["src/**/*.spec.ts"],
 		environment: "node",
-		benchmark: { include: ["bench/**/*.bench.ts"] },
+		benchmark: {
+			include: ["bench/**/*.bench.ts"],
+			suppressExportGetterWarnings: true,
+		},
 	},
 });

@@ -34,9 +34,9 @@
 		"dist"
 	],
 	"scripts": {
-		"bench": "vitest bench --run --config vitest.config.ts",
-		"bench:baseline": "vitest bench --run --config vitest.config.ts --outputJson bench/.baseline.json",
-		"bench:compare": "vitest bench --run --config vitest.config.ts --compare bench/.baseline.json",
+		"bench": "vitest bench --run --reporter verbose --config vitest.config.ts",
+		"bench:baseline": "BENCH_BASELINE=1 vitest bench --run --reporter verbose --config vitest.config.ts",
+		"bench:compare": "BENCH_COMPARE=1 vitest bench --run --reporter verbose --config vitest.config.ts",
 		"bench:memory": "node --expose-gc --import tsx bench/memory.ts",
 		"build": "tsc --build tsconfig.build.json",
 		"format:check": "prettier --check '{{bench,src,test}/**/*,*}.{{t,j}s{,x},json{,5},md,y{,a}ml}'",
@@ -65,12 +65,12 @@
 		"@resvg/resvg-js": "^2.6.2",
 		"@types/mapbox__vector-tile": "^1.3.4",
 		"@types/node": "^26.4.0",
-		"@vitest/coverage-v8": "^4.1.10",
+		"@vitest/coverage-v8": "^5.0.5",
 		"eslint": "^10.7.0",
 		"prettier": "^3.9.5",
 		"tsx": "^4.20.6",
 		"typescript": "^6.0.3",
-		"vitest": "^4.1.10"
+		"vitest": "^5.0.5"
 	},
 	"peerDependencies": {
 		"@resvg/resvg-js": "^2.6.2"

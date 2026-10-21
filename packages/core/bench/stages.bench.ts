@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
-import { bench, describe } from "vitest";
+import { test } from "vitest";
 
+import { run } from "./baseline.js";
 import { GridIndex } from "../src/collision.js";
 import { decodeTile } from "../src/decode.js";
 import { canvas } from "../src/geometry.js";
@@ -109,30 +110,34 @@ const placed = placeLabels({
 	warn: createWarningCollector({}),
 });
 
-describe("decodeTile", () => {
-	bench("transportation and water", () => {
-		decodeTile({
-			buffer,
-			coord: { z: 13, column: 4323, y: 2647 },
-			tileDisplaySize: 512,
-			sourceLayers: ["transportation", "water"],
-		});
+test("decodeTile", async ({ bench }) => {
+	await run(bench, {
+		"transportation and water": () => {
+			decodeTile({
+				buffer,
+				coord: { z: 13, column: 4323, y: 2647 },
+				tileDisplaySize: 512,
+				sourceLayers: ["transportation", "water"],
+			});
+		},
 	});
 });
 
-describe("GridIndex", () => {
-	bench("insert and hit test", () => {
-		const grid = new GridIndex(WIDTH, HEIGHT);
+test("GridIndex", async ({ bench }) => {
+	await run(bench, {
+		"insert and hit test": () => {
+			const grid = new GridIndex(WIDTH, HEIGHT);
 
-		for (const [uid, box] of boxes.entries()) {
-			if (!grid.hitTest(box)) {
-				grid.insert(uid, box);
+			for (const [uid, box] of boxes.entries()) {
+				if (!grid.hitTest(box)) {
+					grid.insert(uid, box);
+				}
 			}
-		}
+		},
 	});
 });
 
-describe("placeLabels", () => {
+test("placeLabels", async ({ bench }) => {
 	const place = (annealingStages: number): void => {
 		placeLabels({
 			candidates,
@@ -144,55 +149,62 @@ describe("placeLabels", () => {
 		});
 	};
 
-	bench("greedy seed only", () => {
-		place(0);
-	});
-
-	// Over 100 ms per call, so it needs a longer window than the default.
-	bench(
-		"with annealing",
-		() => {
-			place(50);
+	await run(
+		bench,
+		{
+			"greedy seed only": () => {
+				place(0);
+			},
+			"with annealing": () => {
+				place(50);
+			},
 		},
+		// Over 100 ms per call, so it needs a longer window than the default.
 		{ time: 3000 },
 	);
 });
 
-describe("resolveStyle", () => {
-	bench("two declarations", () => {
-		resolveStyle({
-			declarations,
-			schema,
-			zoom: 13,
-			warn: createWarningCollector({}),
-		});
+test("resolveStyle", async ({ bench }) => {
+	await run(bench, {
+		"two declarations": () => {
+			resolveStyle({
+				declarations,
+				schema,
+				zoom: 13,
+				warn: createWarningCollector({}),
+			});
+		},
 	});
 });
 
-describe("buildPaths", () => {
-	bench("fixture tile, two rules", () => {
-		buildPaths({
-			features,
-			rules: style.rules,
-			bounds,
-			width: 1200,
-			height: 300,
-		});
+test("buildPaths", async ({ bench }) => {
+	await run(bench, {
+		"fixture tile, two rules": () => {
+			buildPaths({
+				features,
+				rules: style.rules,
+				bounds,
+				width: 1200,
+				height: 300,
+			});
+		},
 	});
 });
 
-describe("serializeScene", () => {
-	bench("fixture paths and labels", () => {
-		serializeScene({
-			width: 1200,
-			height: 300,
-			scale: 1,
-			background: "#F5F5F3",
-			paths,
-			labels: placed,
-			overlays: [],
-			attribution: [{ text: "OpenFreeMap" }],
-			attributionPlacement: "bottom-right",
-		});
+test("serializeScene", async ({ bench }) => {
+	await run(bench, {
+		"fixture paths and labels": () => {
+			serializeScene({
+				width: 1200,
+				height: 300,
+				scale: 1,
+				background: "#F5F5F3",
+				paths,
+				labels: placed,
+				overlays: [],
+				attribution: [{ text: "OpenFreeMap" }],
+				attributionPlacement: "bottom-right",
+			});
+		},
 	});
 });
