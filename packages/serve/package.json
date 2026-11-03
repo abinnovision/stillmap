@@ -58,7 +58,7 @@
 		"@abinnovision/prettier-config": "^2.2.0",
 		"@internal/tsconfig": "workspace:*",
 		"@stillmap/sources": "workspace:^",
-		"@types/node": "^26.6.5",
+		"@types/node": "^26.6.6",
 		"@types/react": "^19.3.0",
 		"@types/react-dom": "^19.3.0",
 		"@vitest/coverage-v8": "^5.0.5",
