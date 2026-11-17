@@ -1207,7 +1207,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@internal/tsconfig@workspace:packages/tsconfig"
   dependencies:
-    prettier: "npm:^3.9.10"
+    prettier: "npm:^3.10.0"
     typescript: "npm:^6.0.3"
   languageName: unknown
   linkType: soft
@@ -1762,7 +1762,7 @@ __metadata:
     "@types/react": "npm:^19.3.0"
     "@types/react-dom": "npm:^19.3.0"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.9.10"
+    prettier: "npm:^3.10.0"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     shiki: "npm:^4.6.0"
@@ -1790,7 +1790,7 @@ __metadata:
     "@types/react-dom": "npm:^19.3.0"
     eslint: "npm:^10.14.0"
     next: "npm:^16.4.6"
-    prettier: "npm:^3.9.10"
+    prettier: "npm:^3.10.0"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     typescript: "npm:^6.0.3"
@@ -1813,7 +1813,7 @@ __metadata:
     eslint: "npm:^10.14.0"
     opentype.js: "npm:^2.0.0"
     pbf: "npm:^5.1.2"
-    prettier: "npm:^3.9.10"
+    prettier: "npm:^3.10.0"
     tsx: "npm:^4.23.15"
     typescript: "npm:^6.0.3"
     vitest: "npm:^5.1.0"
@@ -1841,7 +1841,7 @@ __metadata:
     "@types/react-dom": "npm:^19.3.0"
     "@vitest/coverage-v8": "npm:^5.1.0"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.9.10"
+    prettier: "npm:^3.10.0"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     typescript: "npm:^6.0.3"
@@ -1862,11 +1862,11 @@ __metadata:
     "@vitest/coverage-v8": "npm:^5.1.0"
     husky: "npm:^9.1.7"
     lint-staged: "npm:^17.6.0"
-    prettier: "npm:^3.9.10"
+    prettier: "npm:^3.10.0"
     rimraf: "npm:^6.1.4"
     sort-package-json: "npm:^4.1.0"
-    turbo: "npm:2.11.10"
-    vite: "npm:^8.3.7"
+    turbo: "npm:2.11.11"
+    vite: "npm:^8.3.8"
     vitest: "npm:^5.1.0"
   languageName: unknown
   linkType: soft
@@ -1887,7 +1887,7 @@ __metadata:
     "@types/react-dom": "npm:^19.3.0"
     "@vitest/coverage-v8": "npm:^5.1.0"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.9.10"
+    prettier: "npm:^3.10.0"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     typescript: "npm:^6.0.3"
@@ -1909,7 +1909,7 @@ __metadata:
     "@types/node": "npm:^26.6.6"
     "@vitest/coverage-v8": "npm:^5.1.0"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.9.10"
+    prettier: "npm:^3.10.0"
     typescript: "npm:^6.0.3"
     vitest: "npm:^5.1.0"
   languageName: unknown
@@ -1931,7 +1931,7 @@ __metadata:
     "@types/react-dom": "npm:^19.3.0"
     "@vitest/coverage-v8": "npm:^5.1.0"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.9.10"
+    prettier: "npm:^3.10.0"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     typescript: "npm:^6.0.3"
@@ -1967,44 +1967,44 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@turbo/darwin-64@npm:2.11.10":
-  version: 2.11.10
-  resolution: "@turbo/darwin-64@npm:2.11.10"
+"@turbo/darwin-64@npm:2.11.11":
+  version: 2.11.11
+  resolution: "@turbo/darwin-64@npm:2.11.11"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@turbo/darwin-arm64@npm:2.11.10":
-  version: 2.11.10
-  resolution: "@turbo/darwin-arm64@npm:2.11.10"
+"@turbo/darwin-arm64@npm:2.11.11":
+  version: 2.11.11
+  resolution: "@turbo/darwin-arm64@npm:2.11.11"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@turbo/linux-64@npm:2.11.10":
-  version: 2.11.10
-  resolution: "@turbo/linux-64@npm:2.11.10"
+"@turbo/linux-64@npm:2.11.11":
+  version: 2.11.11
+  resolution: "@turbo/linux-64@npm:2.11.11"
   conditions: (os=android | os=linux) & cpu=x64
   languageName: node
   linkType: hard
 
-"@turbo/linux-arm64@npm:2.11.10":
-  version: 2.11.10
-  resolution: "@turbo/linux-arm64@npm:2.11.10"
+"@turbo/linux-arm64@npm:2.11.11":
+  version: 2.11.11
+  resolution: "@turbo/linux-arm64@npm:2.11.11"
   conditions: (os=android | os=linux) & cpu=arm64
   languageName: node
   linkType: hard
 
-"@turbo/windows-64@npm:2.11.10":
-  version: 2.11.10
-  resolution: "@turbo/windows-64@npm:2.11.10"
+"@turbo/windows-64@npm:2.11.11":
+  version: 2.11.11
+  resolution: "@turbo/windows-64@npm:2.11.11"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@turbo/windows-arm64@npm:2.11.10":
-  version: 2.11.10
-  resolution: "@turbo/windows-arm64@npm:2.11.10"
+"@turbo/windows-arm64@npm:2.11.11":
+  version: 2.11.11
+  resolution: "@turbo/windows-arm64@npm:2.11.11"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -4504,12 +4504,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.9.10":
-  version: 3.9.10
-  resolution: "prettier@npm:3.9.10"
+"prettier@npm:^3.10.0":
+  version: 3.10.0
+  resolution: "prettier@npm:3.10.0"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10/5d0118add4b44eb9d50c114f5c525451cc92be9da300ad0552787472535a3f23884baed3223d9b577bb7d1152eb58aeccfcc2b4541c0cf2274c0b4d328e36834
+  checksum: 10/c87442be0b480bc968cbd44d5984fd2ccf1d0b2a94aa3f35ffccc8751cf25751360adce3884d08b0f52c403fa75bfdf64bacdd2802d9fc1e0efee7456cf4ef36
   languageName: node
   linkType: hard
 
@@ -4919,7 +4919,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:^5.1.0"
     esbuild: "npm:^0.28.2"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.9.10"
+    prettier: "npm:^3.10.0"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     typescript: "npm:^6.0.3"
@@ -5160,16 +5160,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo@npm:2.11.10":
-  version: 2.11.10
-  resolution: "turbo@npm:2.11.10"
+"turbo@npm:2.11.11":
+  version: 2.11.11
+  resolution: "turbo@npm:2.11.11"
   dependencies:
-    "@turbo/darwin-64": "npm:2.11.10"
-    "@turbo/darwin-arm64": "npm:2.11.10"
-    "@turbo/linux-64": "npm:2.11.10"
-    "@turbo/linux-arm64": "npm:2.11.10"
-    "@turbo/windows-64": "npm:2.11.10"
-    "@turbo/windows-arm64": "npm:2.11.10"
+    "@turbo/darwin-64": "npm:2.11.11"
+    "@turbo/darwin-arm64": "npm:2.11.11"
+    "@turbo/linux-64": "npm:2.11.11"
+    "@turbo/linux-arm64": "npm:2.11.11"
+    "@turbo/windows-64": "npm:2.11.11"
+    "@turbo/windows-arm64": "npm:2.11.11"
   dependenciesMeta:
     "@turbo/darwin-64":
       optional: true
@@ -5185,7 +5185,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10/1aea290655d521785eff88bc940836e631e4ad68ceb13d1f97f848a42ef3f6dc6a49a17c6c60eeb93747a77a0bb5fbff85d8ac1f28c13b236edd6f89e6cdbb72
+  checksum: 10/a5a647eccfc2ffea002f719e3cae21cb84f507aa86749245d930aa6f310ceaf8637c93396dff759f12c84a50a89c5b1268c59f566d2ef5e3a79557b540ce84b6
   languageName: node
   linkType: hard
 
@@ -5426,9 +5426,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^8.3.7":
-  version: 8.3.7
-  resolution: "vite@npm:8.3.7"
+"vite@npm:^8.3.8":
+  version: 8.3.8
+  resolution: "vite@npm:8.3.8"
   dependencies:
     fsevents: "npm:~2.3.3"
     lightningcss: "npm:^1.33.0"
@@ -5479,7 +5479,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10/18803d5c9977dd179a17cffef22bf5365f23f815f5bab78e461b3a7d9f213cbf2ccaa5995d4bc01d7bf408c48114e61932ddfd3fab539cbf47444817626b000e
+  checksum: 10/8444028a3515debb9b3c05fe5428c382b1fa7158321789d94e6f844f231a81c3d5ee0eadd92487492924ad5d24f85e48dd96982de4c7b623a3beb1939622af96
   languageName: node
   linkType: hard
 
