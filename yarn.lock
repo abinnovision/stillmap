@@ -1207,7 +1207,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@internal/tsconfig@workspace:packages/tsconfig"
   dependencies:
-    prettier: "npm:^3.10.0"
+    prettier: "npm:^3.10.1"
     typescript: "npm:^6.0.3"
   languageName: unknown
   linkType: soft
@@ -1762,7 +1762,7 @@ __metadata:
     "@types/react": "npm:^19.3.0"
     "@types/react-dom": "npm:^19.3.0"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.10.0"
+    prettier: "npm:^3.10.1"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     shiki: "npm:^4.6.0"
@@ -1790,7 +1790,7 @@ __metadata:
     "@types/react-dom": "npm:^19.3.0"
     eslint: "npm:^10.14.0"
     next: "npm:^16.4.6"
-    prettier: "npm:^3.10.0"
+    prettier: "npm:^3.10.1"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     typescript: "npm:^6.0.3"
@@ -1813,7 +1813,7 @@ __metadata:
     eslint: "npm:^10.14.0"
     opentype.js: "npm:^2.0.0"
     pbf: "npm:^5.1.2"
-    prettier: "npm:^3.10.0"
+    prettier: "npm:^3.10.1"
     tsx: "npm:^4.23.15"
     typescript: "npm:^6.0.3"
     vitest: "npm:^5.1.0"
@@ -1841,7 +1841,7 @@ __metadata:
     "@types/react-dom": "npm:^19.3.0"
     "@vitest/coverage-v8": "npm:^5.1.0"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.10.0"
+    prettier: "npm:^3.10.1"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     typescript: "npm:^6.0.3"
@@ -1862,7 +1862,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:^5.1.0"
     husky: "npm:^9.1.7"
     lint-staged: "npm:^17.6.0"
-    prettier: "npm:^3.10.0"
+    prettier: "npm:^3.10.1"
     rimraf: "npm:^6.1.4"
     sort-package-json: "npm:^4.1.0"
     turbo: "npm:2.11.11"
@@ -1887,7 +1887,7 @@ __metadata:
     "@types/react-dom": "npm:^19.3.0"
     "@vitest/coverage-v8": "npm:^5.1.0"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.10.0"
+    prettier: "npm:^3.10.1"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     typescript: "npm:^6.0.3"
@@ -1909,7 +1909,7 @@ __metadata:
     "@types/node": "npm:^26.6.6"
     "@vitest/coverage-v8": "npm:^5.1.0"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.10.0"
+    prettier: "npm:^3.10.1"
     typescript: "npm:^6.0.3"
     vitest: "npm:^5.1.0"
   languageName: unknown
@@ -1931,7 +1931,7 @@ __metadata:
     "@types/react-dom": "npm:^19.3.0"
     "@vitest/coverage-v8": "npm:^5.1.0"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.10.0"
+    prettier: "npm:^3.10.1"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     typescript: "npm:^6.0.3"
@@ -4504,12 +4504,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.10.0":
-  version: 3.10.0
-  resolution: "prettier@npm:3.10.0"
+"prettier@npm:^3.10.1":
+  version: 3.10.1
+  resolution: "prettier@npm:3.10.1"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10/c87442be0b480bc968cbd44d5984fd2ccf1d0b2a94aa3f35ffccc8751cf25751360adce3884d08b0f52c403fa75bfdf64bacdd2802d9fc1e0efee7456cf4ef36
+  checksum: 10/ab4fc7bbee5823eb99200f89172e1dc360a8225facc19db336f30aa4e089bd8576f141ca8e129ce6ce850f1d7beb4d6e8b7630c2522b3b2fdc62330114f828b2
   languageName: node
   linkType: hard
 
@@ -4919,7 +4919,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:^5.1.0"
     esbuild: "npm:^0.28.2"
     eslint: "npm:^10.14.0"
-    prettier: "npm:^3.10.0"
+    prettier: "npm:^3.10.1"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     typescript: "npm:^6.0.3"

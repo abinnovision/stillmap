@@ -20,7 +20,7 @@
 	},
 	"prettier": "@abinnovision/prettier-config",
 	"devDependencies": {
-		"prettier": "^3.10.0",
+		"prettier": "^3.10.1",
 		"typescript": "^6.0.3"
 	}
 }
