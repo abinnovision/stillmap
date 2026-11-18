@@ -52,7 +52,7 @@
 		"@vitest/coverage-v8": "^5.1.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^17.6.0",
-		"prettier": "^3.10.0",
+		"prettier": "^3.10.1",
 		"rimraf": "^6.1.4",
 		"sort-package-json": "^4.1.0",
 		"turbo": "2.11.11",
