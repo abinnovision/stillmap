@@ -1812,7 +1812,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:^5.1.0"
     eslint: "npm:^10.15.0"
     opentype.js: "npm:^2.0.0"
-    pbf: "npm:^5.1.2"
+    pbf: "npm:^5.2.0"
     prettier: "npm:^3.10.1"
     tsx: "npm:^4.23.15"
     typescript: "npm:^6.0.3"
@@ -4450,14 +4450,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pbf@npm:^5.0.0, pbf@npm:^5.1.2":
-  version: 5.1.2
-  resolution: "pbf@npm:5.1.2"
+"pbf@npm:^5.0.0, pbf@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "pbf@npm:5.2.0"
   dependencies:
-    resolve-protobuf-schema: "npm:^2.1.0"
+    protocol-buffers-schema: "npm:^3.6.1"
   bin:
     pbf: bin/pbf
-  checksum: 10/add0663777f352c9432503e5fa18eb5be112a8ee4d32b233b8c7128bebddb013b874748f63d9db1a6f3050d077c70acdafda75fd8d4b66a75af627ec2db4b7a8
+  checksum: 10/f499328303e82a890068b54a3447a3c5f376ac2e79455a3a0866961f3fdbd4ffd8342acb2c0b9188219e48d8970d406d5f6b5af4e43871a3e5f8224d2309970c
   languageName: node
   linkType: hard
 
@@ -4527,7 +4527,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protocol-buffers-schema@npm:^3.3.1":
+"protocol-buffers-schema@npm:^3.6.1":
   version: 3.6.1
   resolution: "protocol-buffers-schema@npm:3.6.1"
   checksum: 10/a7ca74e71227932f903feab9df8ffde80703b656fd024179b3a9439edb3907eca4c78f0cd6f47ad7698e832ae565a8df7585d9cedcc4f043794e6ba8e480cdec
@@ -4618,15 +4618,6 @@ __metadata:
   version: 1.0.0
   resolution: "resolve-pkg-maps@npm:1.0.0"
   checksum: 10/0763150adf303040c304009231314d1e84c6e5ebfa2d82b7d94e96a6e82bacd1dcc0b58ae257315f3c8adb89a91d8d0f12928241cba2df1680fbe6f60bf99b0e
-  languageName: node
-  linkType: hard
-
-"resolve-protobuf-schema@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "resolve-protobuf-schema@npm:2.1.0"
-  dependencies:
-    protocol-buffers-schema: "npm:^3.3.1"
-  checksum: 10/88fffab2a3757888884a36f9aa4e24be5186b01820a8c26297dc1ce406b9daf776594926bdf524c2c8e8e5b0aba8ac48362b6584cdecc9a7083215ebca01c599
   languageName: node
   linkType: hard
 

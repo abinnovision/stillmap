@@ -56,7 +56,7 @@
 	"dependencies": {
 		"@mapbox/vector-tile": "^3.0.0",
 		"opentype.js": "^2.0.0",
-		"pbf": "^5.1.2"
+		"pbf": "^5.2.0"
 	},
 	"devDependencies": {
 		"@abinnovision/eslint-config-base": "^3.4.2",
